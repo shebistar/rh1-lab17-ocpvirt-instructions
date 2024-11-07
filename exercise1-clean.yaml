@@ -1,0 +1,13 @@
+- name: Cleaning the exercise1
+  hosts: localhost
+
+  tasks:
+    - name: Breaking the exercise1
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise1-break-vm.yaml.j2"
+      register: breakvm
+      until: breakvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: breakvm is failed or breakvm.failed

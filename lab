@@ -1,0 +1,74 @@
+
+
+    #!/bin/bash 
+     
+    bold=`tput bold`
+    normal=`tput sgr0`
+    black=`tput setaf 0`
+    red=`tput setaf 1`
+    green=`tput setaf 2`
+    yellow=`tput setaf 3`
+    blue=`tput setaf 4`
+    magenta=`tput setaf 5`
+    cyan=`tput setaf 6`
+    white=`tput setaf 7`
+     
+     
+    MYHOSTNAME=`hostname`
+    MYNAME=`whoami`
+    PROJECTDIR="/home/lchiaret/git/lab-rh1-troubleshooting-ocpvirt"
+     
+    # startup
+    logger -p local0.notice "Initiating $0 with option(s) $@"
+    echo "Initiating $0 with option(s) $@"
+     
+    breaks() {
+      ansible-playbook $PROJECTDIR/$1-break.yaml
+    }
+     
+    grade() {
+      ansible-playbook $PROJECTDIR/$1-grade.yaml
+    }
+     
+    fix() {
+      ansible-playbook /$PROJECTDIR/$1-fix.yaml
+    }
+
+    clean() {
+      ansible-playbook /$PROJECTDIR/$1-clean.yaml
+    }
+
+
+    if [ "$#" -ne 2 ] || ! [[ "$2" =~ ^(exercise1|exercise2|exercise3)$ ]]; then
+      echo "Usage: $0 {break|fix|grade} <exercise>"
+      exit 2
+    fi
+
+    user=$(oc whoami 2>/dev/null)
+    if [ -z "$user" ]; then
+      echo "You must connect to OpenShift before running lab"
+      exit 2
+    fi
+
+    case "$1" in
+      break)
+        breaks $2
+    		;;
+    	fix)
+    		fix $2
+        ;;
+    	grade)
+    		grade $2
+    		;;
+    	clean)
+			clean $2
+    		;;
+    	*)
+    		echo $"Usage: $0 {break|fix|grade|clean} <exerciseN>"
+    		exit 2
+    esac
+     
+     
+    logger -p local0.notice "Completed $0 with option(s) $@ successfully"
+    echo "Completed $0 with option(s) $@ successfully"
+    exit 0

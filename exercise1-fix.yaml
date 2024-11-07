@@ -1,0 +1,28 @@
+- name: Fixing the exercise1
+  hosts: localhost
+
+  tasks:
+    - name: Set VM to stopped state
+      kubernetes.core.k8s:
+        namespace: chiaretto-vms
+        kind: VirtualMachine
+        name: exercise1
+        state: present
+        definition:
+          spec:
+            running: false
+      register: stopvm
+      until: stopvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: stopvm is failed or stopvm.failed
+
+    - name: Fixing the exercise1
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise1-fix-vm.yaml.j2"
+      register: fixvm
+      until: fixvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: fixvm is failed or fixvm.failed
