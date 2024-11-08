@@ -1,0 +1,65 @@
+- name: Admin configure users prerequesites
+  hosts: localhost
+
+  vars:
+    n_users: 2
+    default_users_pwd: j6eN26ewRhJUSiPb
+
+  tasks:
+    - name: Check if admin is authenticated with OpenShift 4
+      ansible.builtin.command: oc whoami
+      register: oc_whoami_result
+      changed_when: false
+      ignore_errors: true
+      no_log: true
+
+    - name: Fail if not connected on cluster
+      ansible.builtin.fail:
+        msg: "You are not logged into the cluster. Please use 'oc login' and re-run this playbook"
+      when: oc_whoami_result.rc != 0
+
+    - name: Fail if not logged in as admin
+      ansible.builtin.fail:
+        msg: "You are logged in but you are not 'admin' user. Please log in with user 'admin'"
+      when: oc_whoami_result.stdout != "admin"
+
+    - name: Removing showrooom projects
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "showroom-user{{ item }}"
+      with_sequence: start=1 end={{ n_users }}
+
+    - name: Removing OADP projects
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "oadp-user{{ item }}"
+      with_sequence: start=1 end={{ n_users }}
+
+    - name: Ensure user namespace exists
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "namespace-user{{ item }}"
+      with_sequence: start=1 end={{ n_users }}
+
+    - name: Creating bastion vms on users namespace
+      kubernetes.core.k8s:
+        state: present
+        template: "bastion.yaml.j2"
+      with_sequence: start=1 end={{ n_users }}
+      register: bastion
+      until: bastion is succeeded
+      retries: 60
+      delay: 10
+      failed_when: bastion is failed or bastion.failed
