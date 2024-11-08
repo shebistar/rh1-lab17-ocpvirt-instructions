@@ -2,7 +2,7 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: exercise1
-  namespace: chiaretto-vms
+  namespace: "namespace-{{ user }}"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:

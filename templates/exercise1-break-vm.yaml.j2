@@ -2,7 +2,7 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: exercise1
-  namespace: "exercise1_{{ user }}"
+  namespace: "namespace-{{ user }}"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
