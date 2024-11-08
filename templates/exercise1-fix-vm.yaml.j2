@@ -79,7 +79,7 @@ spec:
         - cloudInitNoCloud:
             userData: |-
               #cloud-config
-              user: fedora
+              user: "{{ user }}"
               password: RH1@2025
               chpasswd: { expire: False }
           name: cloudinitdisk

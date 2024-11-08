@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: exercise2
+  namespace: "namespace-{{ user }}"
+spec:
+  port:
+    targetPort: 8080
+  to:
+    kind: Service
+    name: exercise2
+    weight: 100
+  wildcardPolicy: None
