@@ -15,7 +15,7 @@
 
     - name: Access the URL and check for the response
       ansible.builtin.uri:
-        url: "http://{{ routefacts.resources[0].spec.host }}"
+        url: "https://{{ routefacts.resources[0].spec.host }}"
         method: GET
         return_content: true
       register: urlcontent
