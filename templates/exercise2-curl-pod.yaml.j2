@@ -5,6 +5,7 @@ metadata:
   labels:
     run: curlimage
   name: curlimage
+  namespace: "namespace-{{ user }}"
 spec:
   containers:
   - image: quay.io/chiaretto/curlimage
