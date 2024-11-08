@@ -81,4 +81,8 @@ spec:
               user: user{{ item }}
               password: {{ default_users_pwd }}
               chpasswd: { expire: False }
+                - curl -L -o /tmp/openshift-client-linux.tar.gz "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.16.19/openshift-client-linux.tar.gz"
+                - mkdir -p /usr/local/bin
+                - tar -xzf /tmp/openshift-client-linux.tar.gz  -C /usr/local/bin
+                - rm /tmp/openshift-client-linux.tar.gz
           name: cloudinitdisk

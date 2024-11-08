@@ -89,10 +89,6 @@ spec:
                 - systemctl enable httpd
                 - systemctl start httpd
                 - echo "Hello from exercise2, you are doing a great job!" > /var/www/html/index.html
-                - curl -L -o /tmp/openshift-client-linux.tar.gz "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.16.19/openshift-client-linux.tar.gz"
-                - mkdir -p /usr/local/bin
-                - tar -xzf /tmp/openshift-client-linux.tar.gz  -C /usr/local/bin
-                - rm /tmp/openshift-client-linux.tar.gz
 
               final_message: "HTTP server is configured, file downloaded and extracted!"
           name: cloudinitdisk
