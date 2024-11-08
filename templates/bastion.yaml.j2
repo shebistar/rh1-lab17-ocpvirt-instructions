@@ -1,19 +1,19 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: "bastion-user-{{ item }}"
+  name: "bastion"
   namespace: "namespace-user{{ item }}"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
-    app: "bastion-user-{{ item }}"
+    app: "bastion"
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
       kind: DataVolume
       metadata:
         creationTimestamp: null
-        name: "bastion-user-{{ item }}"
+        name: "bastion"
       spec:
         sourceRef:
           kind: DataSource
@@ -32,7 +32,7 @@ spec:
         vm.kubevirt.io/workload: server
       creationTimestamp: null
       labels:
-        kubevirt.io/domain: "bastion-user-{{ item }}"
+        kubevirt.io/domain: "bastion"
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
@@ -73,16 +73,22 @@ spec:
       terminationGracePeriodSeconds: 180
       volumes:
         - dataVolume:
-            name: "bastion-user-{{ item }}"
+            name: "bastion"
           name: rootdisk
         - cloudInitNoCloud:
             userData: |-
               #cloud-config
               user: user{{ item }}
-              password: {{ default_users_pwd }}
+              password: redhat1
               chpasswd: { expire: False }
+              packages:
+                - git
+                - python3-pip
+                - ansible-core
+              runcmd:              
                 - curl -L -o /tmp/openshift-client-linux.tar.gz "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.16.19/openshift-client-linux.tar.gz"
-                - mkdir -p /usr/local/bin
                 - tar -xzf /tmp/openshift-client-linux.tar.gz  -C /usr/local/bin
                 - rm /tmp/openshift-client-linux.tar.gz
+                - git clone https://github.com/opentraining-labs-customizations/rh1-lab17-ocpvirt.git /opt/rh1-lab17-ocpvirt/
+                - sudo cp /opt/rh1-lab17-ocpvirt/lab /usr/local/bin
           name: cloudinitdisk

@@ -3,7 +3,6 @@
 
   vars:
     n_users: 2
-    default_users_pwd: xxxxxxxxx
 
   tasks:
     - name: Check if admin is authenticated with OpenShift 4

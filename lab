@@ -18,19 +18,19 @@
     echo "Initiating $0 with option(s) $@"
      
     breaks() {
-      ansible-playbook $1-break.yaml
+      ansible-playbook /opt/rh1-lab17-ocpvirt/$1-break.yaml
     }
      
     grade() {
-      ansible-playbook $1-grade.yaml
+      ansible-playbook /opt/rh1-lab17-ocpvirt/$1-grade.yaml
     }
      
     fix() {
-      ansible-playbook $1-fix.yaml
+      ansible-playbook /opt/rh1-lab17-ocpvirt/$1-fix.yaml
     }
 
     clean() {
-      ansible-playbook $1-clean.yaml
+      ansible-playbook /opt/rh1-lab17-ocpvirt/$1-clean.yaml
     }
 
 
