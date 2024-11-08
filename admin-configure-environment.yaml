@@ -43,7 +43,7 @@
             name: "oadp-user{{ item }}"
       with_sequence: start=1 end={{ n_users }}
 
-    - name: Ensure user namespace exists
+    - name: Ensure users namespace exists
       kubernetes.core.k8s:
         state: present
         definition:
@@ -51,6 +51,39 @@
           kind: Namespace
           metadata:
             name: "namespace-user{{ item }}"
+      register: namespaceusers
+      until: namespaceusers is succeeded
+      retries: 60
+      delay: 10
+      failed_when: namespaceusers is failed or namespaceusers.failed
+      with_sequence: start=1 end={{ n_users }}
+
+    - name: Grant cluster-admin role to users in their namespaces
+      kubernetes.core.k8s:
+        state: present
+        namespace: teste
+        kind: RoleBinding
+        api_version: rbac.authorization.k8s.io/v1
+        name: user-cluster-admin-binding
+        definition:
+          kind: RoleBinding
+          apiVersion: rbac.authorization.k8s.io/v1
+          metadata:
+            name: user-cluster-admin-binding
+            namespace: "namespace-user{{ item }}"
+          subjects:
+            - kind: User
+              name: "user{{ item }}"
+              apiGroup: rbac.authorization.k8s.io
+          roleRef:
+            kind: ClusterRole
+            name: cluster-admin
+            apiGroup: rbac.authorization.k8s.io
+      register: rbacusers
+      until: rbacusers is succeeded
+      retries: 60
+      delay: 10
+      failed_when: rbacusers is failed or rbacusers.failed
       with_sequence: start=1 end={{ n_users }}
 
     - name: Creating bastion vms on users namespace

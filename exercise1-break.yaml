@@ -1,5 +1,9 @@
 - name: Preparing the exercise1
   hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
 
   tasks:
     - name: Breaking the exercise1

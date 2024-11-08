@@ -1,10 +1,14 @@
 - name: Fixing the exercise1
   hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
 
   tasks:
     - name: Set VM to stopped state
       kubernetes.core.k8s:
-        namespace: chiaretto-vms
+        namespace: "namespace-{{ user }}"
         kind: VirtualMachine
         name: exercise1
         state: present
