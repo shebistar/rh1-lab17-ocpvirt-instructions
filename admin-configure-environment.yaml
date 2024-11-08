@@ -31,6 +31,11 @@
           kind: Namespace
           metadata:
             name: "showroom-user{{ item }}"
+      register: removeshowrooom
+      until: removeshowrooom is succeeded
+      retries: 60
+      delay: 10
+      failed_when: removeshowrooom is failed or removeshowrooom.failed
       with_sequence: start=1 end={{ n_users }}
 
     - name: Removing OADP projects
@@ -41,6 +46,11 @@
           kind: Namespace
           metadata:
             name: "oadp-user{{ item }}"
+      register: removeoadp
+      until: removeoadp is succeeded
+      retries: 60
+      delay: 10
+      failed_when: removeoadp is failed or removeoadp.failed
       with_sequence: start=1 end={{ n_users }}
 
     - name: Ensure users namespace exists
