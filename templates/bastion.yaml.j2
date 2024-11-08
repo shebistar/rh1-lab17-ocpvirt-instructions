@@ -85,10 +85,14 @@ spec:
                 - git
                 - python3-pip
                 - ansible-core
+                - vim
               runcmd:              
                 - curl -L -o /tmp/openshift-client-linux.tar.gz "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/4.16.19/openshift-client-linux.tar.gz"
                 - tar -xzf /tmp/openshift-client-linux.tar.gz  -C /usr/local/bin
                 - rm /tmp/openshift-client-linux.tar.gz
                 - git clone https://github.com/opentraining-labs-customizations/rh1-lab17-ocpvirt.git /opt/rh1-lab17-ocpvirt/
                 - sudo cp /opt/rh1-lab17-ocpvirt/lab /usr/local/bin
+                - ansible-galaxy collection install -r /opt/rh1-lab17-ocpvirt/requirements.yml -p /usr/share/ansible/collections/
+                - pip install kubernetes passlib
+                - echo 'export EDITOR=vim' >> "/home/user{{ item }}/.bashrc"
           name: cloudinitdisk
