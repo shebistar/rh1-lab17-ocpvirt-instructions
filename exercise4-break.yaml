@@ -1,0 +1,17 @@
+- name: Preparing the exercise4
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Creating exercise4 virtual machine
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise4-vm.yaml.j2"
+      register: exercise4vm
+      until: exercise4vm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exercise4vm is failed or exercise4vm.failed
