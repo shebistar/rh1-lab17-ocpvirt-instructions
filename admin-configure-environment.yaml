@@ -2,7 +2,7 @@
   hosts: localhost
 
   vars:
-    n_users: 2
+    n_users: 4
 
   tasks:
     - name: Check if admin is authenticated with OpenShift 4
@@ -105,3 +105,30 @@
       retries: 60
       delay: 10
       failed_when: bastion is failed or bastion.failed
+
+    - name: Getting all nodes
+      kubernetes.core.k8s_info:
+        kind: Node
+      register: allnodes
+
+    - name: Getting only worker nodes
+      ansible.builtin.set_fact:
+        nodes_list: "{{ allnodes.resources | selectattr('metadata.labels', 'defined') | \
+                     selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/worker') | map(attribute='metadata.name') | list }}"
+
+    # - name: Add label userX=true to all worker nodes
+    #   kubernetes.core.k8s:
+    #     definition:
+    #       apiVersion: v1
+    #       kind: Node
+    #       metadata:
+    #         name: "{{ nodes_list[item % nodes_list | length] }}"
+    #         labels:
+    #           "apps{{ item }}": "true"
+    #   loop: "{{ range(n_users) | list }}"
+
+    - name: Add label userX=true to all worker nodes
+      ansible.builtin.command:
+        cmd: oc label node "{{ nodes_list[item % nodes_list | length] }}" user{{ item }}="true"
+      loop: "{{ range(n_users) | list }}"
+

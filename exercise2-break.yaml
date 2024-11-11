@@ -39,7 +39,7 @@
     - name: Creating curl image pod for tests
       kubernetes.core.k8s:
         state: present
-        template: "exercise2-curl-pod.yaml.j2"
+        template: "curl-pod.yaml.j2"
       register: exercise2curlpod
       until: exercise2curlpod is succeeded
       retries: 60
