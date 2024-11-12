@@ -1,0 +1,26 @@
+- name: Fixing the exercise4
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Get the exercise4 VM details from OpenShift Virtualization
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        api_version: kubevirt.io/v1
+        name: exercise4
+        namespace: "namespace-{{ user }}"
+      register: vm_info
+
+    - name: Extract the core count from exercise4 VM spec
+      ansible.builtin.set_fact:
+        core_count: "{{ vm_info.resources[0].spec.template.spec.domain.cpu.cores | int }}"
+
+    - name: Assert that core_count is 2 in order to a VM get 4 vCPU
+      ansible.builtin.assert:
+        that:
+          - core_count == "2"
+        success_msg: "Good job, the development team are happy that you solved the problem!"
+        fail_msg: "Ops, something went wrong and you have to fix the exercise!"

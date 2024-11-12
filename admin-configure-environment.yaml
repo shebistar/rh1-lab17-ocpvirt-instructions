@@ -106,6 +106,99 @@
       delay: 10
       failed_when: bastion is failed or bastion.failed
 
+    - name: Moving openshift-monitoring pods to run on control-planes
+      kubernetes.core.k8s:
+        state: present
+        template: "configmap-monitoring.yaml.j2"
+      register: cmmonit
+      until: cmmonit is succeeded
+      retries: 60
+      delay: 10
+      failed_when: cmmonit is failed or cmmonit.failed
+
+    - name: Adding default tolerations and nodeselector on openshift-gitops
+      kubernetes.core.k8s:
+        kind: Namespace
+        name: "{{ item }}"
+        merge_type: merge
+        resource_definition:
+          metadata:
+            annotations:
+              scheduler.alpha.kubernetes.io/defaultTolerations: '[{"operator": "Exists"}]'
+              openshift.io/node-selector: "node-role.kubernetes.io/master=\"\""
+      register: tolerations
+      until: tolerations is succeeded
+      retries: 60
+      delay: 10
+      failed_when: tolerations is failed or tolerations.failed
+      loop:
+        - openshift-storage
+        - openshift-cnv
+
+    - name: Moving pods on openshift-cnv to masters
+      kubernetes.core.k8s:
+        api_version: hco.kubevirt.io/v1beta1
+        kind: HyperConverged
+        name: kubevirt-hyperconverged
+        merge_type: merge
+        namespace: openshift-cnv
+        resource_definition:
+          spec:
+            infra:
+              nodePlacement:
+                nodeSelector:
+                  node-role.kubernetes.io/infra: ""
+              tolerations:
+                - operator: Exists
+      register: cnvinfra
+      until: cnvinfra is succeeded
+      retries: 60
+      delay: 10
+      failed_when: cnvinfra is failed or cnvinfra.failed
+
+    - name: Add tolerations to run csidrivers on masters
+      kubernetes.core.k8s:
+        kind: ConfigMap
+        name: rook-ceph-operator-config
+        merge_type: merge
+        namespace: openshift-storage
+        resource_definition:
+          data:
+            CSI_PLUGIN_TOLERATIONS: |
+              - operator: Exists
+      register: csistorage
+      until: csistorage is succeeded
+      retries: 60
+      delay: 10
+      failed_when: csistorage is failed or csistorage.failed
+
+    - name: Delete applicationset on openshift-gitops
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Pod
+        namespace: openshift-gitops
+        state: absent
+      register: appsetrm
+      until: appsetrm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: appsetrm is failed or appsetrm.failed
+
+    - name: Delete all pods in the namespaces
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Pod
+        namespace: "{{ item }}"
+        state: absent
+        label_selectors: ""
+      loop:
+        - openshift-gitops
+      register: deletepods
+      until: deletepods is succeeded
+      retries: 60
+      delay: 10
+      failed_when: deletepods is failed or deletepods.failed
+
     - name: Getting all nodes
       kubernetes.core.k8s_info:
         kind: Node
@@ -116,19 +209,24 @@
         nodes_list: "{{ allnodes.resources | selectattr('metadata.labels', 'defined') | \
                      selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/worker') | map(attribute='metadata.name') | list }}"
 
-    # - name: Add label userX=true to all worker nodes
-    #   kubernetes.core.k8s:
-    #     definition:
-    #       apiVersion: v1
-    #       kind: Node
-    #       metadata:
-    #         name: "{{ nodes_list[item % nodes_list | length] }}"
-    #         labels:
-    #           "apps{{ item }}": "true"
-    #   loop: "{{ range(n_users) | list }}"
+    - name: Getting only control-planes
+      ansible.builtin.set_fact:
+        controlplane_nodes_list: "{{ allnodes.resources | selectattr('metadata.labels', 'defined') | \
+                     selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/control-plane') | map(attribute='metadata.name') | list }}"
+
+    - name: Add label node-role.kubernetes.io/infra to all master nodes
+      kubernetes.core.k8s:
+        definition:
+          apiVersion: v1
+          kind: Node
+          metadata:
+            name: "{{ item }}"
+            labels:
+              node-role.kubernetes.io/infra: ""
+      loop: "{{ controlplane_nodes_list }}"
 
     - name: Add label userX=true to all worker nodes
       ansible.builtin.command:
-        cmd: oc label node "{{ nodes_list[item % nodes_list | length] }}" user{{ item }}="true"
-      loop: "{{ range(n_users) | list }}"
+        cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length] }}" user{{ item | int }}="true"
+      with_sequence: start=1 end={{ n_users }}
 

@@ -9,7 +9,7 @@
     - name: Creating exercise4 virtual machine
       kubernetes.core.k8s:
         state: present
-        template: "exercise4-vm.yaml.j2"
+        template: "exercise4-break-vm.yaml.j2"
       register: exercise4vm
       until: exercise4vm is succeeded
       retries: 60
