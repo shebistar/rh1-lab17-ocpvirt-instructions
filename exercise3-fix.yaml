@@ -1,0 +1,26 @@
+- name: Fixing the exercise3
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+    - name: Set VM to stop state
+      kubernetes.core.k8s:
+        namespace: namespace-user1
+        kind: VirtualMachine
+        name: exercise3
+        state: absent
+      register: stopvm
+      until: stopvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: stopvm is failed or stopvm.failed
+    
+    - name: Fixing VM
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise3-fix-vm.yaml.j2"
+      register: fixvm
+      until: fixvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: fixvm is failed or fixvm.failed
