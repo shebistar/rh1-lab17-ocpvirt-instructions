@@ -29,7 +29,7 @@
     #       apiVersion: v1
     #       kind: Namespace
     #       metadata:
-    #         name: "showroom-user{{ item }}"
+    #         name: "namespace-user{{ item }}"
     #   register: removeshowrooom
     #   until: removeshowrooom is succeeded
     #   retries: 60
@@ -95,16 +95,16 @@
       failed_when: rbacusers is failed or rbacusers.failed
       with_sequence: start=1 end={{ n_users }}
 
-    - name: Creating bastion vms on users namespace
-      kubernetes.core.k8s:
-        state: present
-        template: "bastion.yaml.j2"
-      with_sequence: start=1 end={{ n_users }}
-      register: bastion
-      until: bastion is succeeded
-      retries: 60
-      delay: 10
-      failed_when: bastion is failed or bastion.failed
+    # - name: Creating bastion vms on users namespace
+    #   kubernetes.core.k8s:
+    #     state: present
+    #     template: "bastion.yaml.j2"
+    #   with_sequence: start=1 end={{ n_users }}
+    #   register: bastion
+    #   until: bastion is succeeded
+    #   retries: 60
+    #   delay: 10
+    #   failed_when: bastion is failed or bastion.failed
 
     - name: Moving openshift-monitoring pods to run on control-planes
       kubernetes.core.k8s:
@@ -227,6 +227,5 @@
 
     - name: Add label userX=true to all worker nodes
       ansible.builtin.command:
-        cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length] }}" user{{ item | int }}="true"
+        cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length - 1 ] }}" user{{ item | int }}="true"
       with_sequence: start=1 end={{ n_users }}
-

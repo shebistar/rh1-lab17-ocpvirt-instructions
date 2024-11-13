@@ -5,7 +5,7 @@
   tasks:
     - name: Set VM to stop state
       kubernetes.core.k8s:
-        namespace: namespace-user1
+        namespace: namespace-{{ user }}
         kind: VirtualMachine
         name: exercise3
         state: absent
