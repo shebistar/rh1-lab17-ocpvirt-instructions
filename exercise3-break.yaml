@@ -1,4 +1,4 @@
-- name: Preparing the exercise2
+- name: Preparing the exercise3
   hosts: localhost
   gather_facts: true
 
@@ -6,42 +6,54 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Creating exercise2 virtual machine
+    - name: Creating exercise3 virtual machine
       kubernetes.core.k8s:
         state: present
-        template: "exercise2-vm.yaml.j2"
-      register: exercise2vm
-      until: exercise2vm is succeeded
+        template: "exercise3-vm.yaml.j2"
+      register: exercise3vm
+      until: exercise3vm is succeeded
       retries: 60
       delay: 10
-      failed_when: exercise2vm is failed or exercise2vm.failed
+      failed_when: exercise3vm is failed or exercise3vm.failed
 
-    - name: Creating exercise2 service
+    - name: Creating exercise3 service
       kubernetes.core.k8s:
         state: present
-        template: "exercise2-service.yaml.j2"
-      register: exercise2svc
-      until: exercise2svc is succeeded
+        template: "exercise3-service.yaml.j2"
+      register: exercise3svc
+      until: exercise3svc is succeeded
       retries: 60
       delay: 10
-      failed_when: exercise2svc is failed or exercise2svc.failed
+      failed_when: exercise3svc is failed or exercise3svc.failed
 
-    - name: Creating exercise2 route
+    - name: Creating exercise3 route
       kubernetes.core.k8s:
         state: present
-        template: "exercise2-break-route.yaml.j2"
-      register: exercise2route
-      until: exercise2route is succeeded
+        template: "exercise3-break-route.yaml.j2"
+      register: exercise3route
+      until: exercise3route is succeeded
       retries: 60
       delay: 10
-      failed_when: exercise2route is failed or exercise2route.failed
+      failed_when: exercise3route is failed or exercise3route.failed
 
     - name: Creating curl image pod for tests
       kubernetes.core.k8s:
         state: present
         template: "curl-pod.yaml.j2"
-      register: exercise2curlpod
-      until: exercise2curlpod is succeeded
+      register: exercise3curlpod
+      until: exercise3curlpod is succeeded
       retries: 60
       delay: 10
-      failed_when: exercise2curlpod is failed or exercise2curlpod.failed
+      failed_when: exercise3curlpod is failed or exercise3curlpod.failed
+
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise3"
+      register: exercise3info
+      until: "exercise3info.resources | length > 0 and exercise3info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise3info.resources | length == 0
