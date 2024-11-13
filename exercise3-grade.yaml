@@ -6,19 +6,23 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Get Virtual Machine status
+    - name: Getting URL from route
       kubernetes.core.k8s_info:
-        kind: VirtualMachine
+        kind: Route
         namespace: "namespace-{{ user }}"
         name: exercise3
-      register: exercise3_info
+      register: routefacts
 
-    - name: Check if VM is running
-      ansible.builtin.debug:
-        msg: "The Virtual Machine is running."
-      when: exercise3_info.resources[0].status.printableStatus == "Running"
+    - name: Access the URL and check for the response
+      ansible.builtin.uri:
+        url: "https://{{ routefacts.resources[0].spec.host }}"
+        method: GET
+        return_content: true
+      register: urlcontent
 
-    - name: Check if VM is not running
-      ansible.builtin.debug:
-        msg: "The Virtual Machine is NOT running."
-      when: exercise3_info.resources[0].status.printableStatus != "Running"
+    - name: Assert that is in the response body expected
+      ansible.builtin.assert:
+        that:
+          - "'Hello from exercise3, you are doing a great job!' in urlcontent.content"
+        success_msg: "Good job, its working as expected!"
+        fail_msg: "Ops, something went wrong and you have to fix the exercise!"

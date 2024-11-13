@@ -2,25 +2,46 @@
   hosts: localhost
   gather_facts: true
 
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
   tasks:
-    - name: Set VM to stop state
-      kubernetes.core.k8s:
-        namespace: namespace-{{ user }}
-        kind: VirtualMachine
-        name: exercise3
-        state: absent
-      register: stopvm
-      until: stopvm is succeeded
-      retries: 60
-      delay: 10
-      failed_when: stopvm is failed or stopvm.failed
-    
-    - name: Fixing VM
+    - name: Fixing exercise3 virtual machine
       kubernetes.core.k8s:
         state: present
-        template: "exercise3-fix-vm.yaml.j2"
-      register: fixvm
-      until: fixvm is succeeded
+        template: "exercise3-vm.yaml.j2"
+      register: exerciseXvm
+      until: exerciseXvm is succeeded
       retries: 60
       delay: 10
-      failed_when: fixvm is failed or fixvm.failed
+      failed_when: exerciseXvm is failed or exerciseXvm.failed
+
+    - name: Fixing exercise3 service
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise3-service.yaml.j2"
+      register: exerciseXsvc
+      until: exerciseXsvc is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exerciseXsvc is failed or exerciseXsvc.failed
+
+    - name: Fixing exercise3 route
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise3-fix-route.yaml.j2"
+      register: exerciseXroute
+      until: exerciseXroute is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exerciseXroute is failed or exerciseXroute.failed
+
+    - name: Fixing curl image pod for tests
+      kubernetes.core.k8s:
+        state: present
+        template: "curl-pod.yaml.j2"
+      register: exerciseXcurlpod
+      until: exerciseXcurlpod is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exerciseXcurlpod is failed or exerciseXcurlpod.failed

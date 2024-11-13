@@ -6,12 +6,42 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Breaking the exercise3
+    - name: Removing exercise3 virtual machine
       kubernetes.core.k8s:
         state: absent
-        template: "exercise3-fix-vm.yaml.j2"
-      register: breakvm
-      until: breakvm is succeeded
+        template: "exercise3-vm.yaml.j2"
+      register: exerciseXvm
+      until: exerciseXvm is succeeded
       retries: 60
       delay: 10
-      failed_when: breakvm is failed or breakvm.failed
+      failed_when: exerciseXvm is failed or exerciseXvm.failed
+
+    - name: Removing exercise3 service
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise3-service.yaml.j2"
+      register: exerciseXsvc
+      until: exerciseXsvc is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exerciseXsvc is failed or exerciseXsvc.failed
+
+    - name: Removing exercise3 route
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise3-break-route.yaml.j2"
+      register: exerciseXroute
+      until: exerciseXroute is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exerciseXroute is failed or exerciseXroute.failed
+
+    - name: Removing curl image pod for tests
+      kubernetes.core.k8s:
+        state: absent
+        template: "curl-pod.yaml.j2"
+      register: exerciseXcurlpod
+      until: exerciseXcurlpod is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exerciseXcurlpod is failed or exerciseXcurlpod.failed

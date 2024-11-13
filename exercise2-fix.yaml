@@ -6,42 +6,24 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Fixing exercise2 virtual machine
+    - name: Set VM to stop state
       kubernetes.core.k8s:
-        state: present
-        template: "exercise2-vm.yaml.j2"
-      register: exercise2vm
-      until: exercise2vm is succeeded
+        namespace: namespace-{{ user }}
+        kind: VirtualMachine
+        name: exercise2
+        state: absent
+      register: stopvm
+      until: stopvm is succeeded
       retries: 60
       delay: 10
-      failed_when: exercise2vm is failed or exercise2vm.failed
+      failed_when: stopvm is failed or stopvm.failed
 
-    - name: Fixing exercise2 service
+    - name: Fixing VM
       kubernetes.core.k8s:
         state: present
-        template: "exercise2-service.yaml.j2"
-      register: exercise2svc
-      until: exercise2svc is succeeded
+        template: "exercise2-fix-vm.yaml.j2"
+      register: fixvm
+      until: fixvm is succeeded
       retries: 60
       delay: 10
-      failed_when: exercise2svc is failed or exercise2svc.failed
-
-    - name: Fixing exercise2 route
-      kubernetes.core.k8s:
-        state: present
-        template: "exercise2-fix-route.yaml.j2"
-      register: exercise2route
-      until: exercise2route is succeeded
-      retries: 60
-      delay: 10
-      failed_when: exercise2route is failed or exercise2route.failed
-
-    - name: Fixing curl image pod for tests
-      kubernetes.core.k8s:
-        state: present
-        template: "curl-pod.yaml.j2"
-      register: exercise2curlpod
-      until: exercise2curlpod is succeeded
-      retries: 60
-      delay: 10
-      failed_when: exercise2curlpod is failed or exercise2curlpod.failed
+      failed_when: fixvm is failed or fixvm.failed
