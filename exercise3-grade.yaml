@@ -1,0 +1,24 @@
+- name: Grading the exercise3
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Get Virtual Machine status
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-user1"
+        name: exercise3
+      register: exercise3_info
+
+    - name: Check if VM is running
+      ansible.builtin.debug:
+        msg: "The Virtual Machine is running."
+      when: exercise3_info.resources[0].status.printableStatus == "Running"
+
+    - name: Check if VM is not running
+      ansible.builtin.debug:
+        msg: "The Virtual Machine is NOT running."
+      when: exercise3_info.resources[0].status.printableStatus != "Running"
