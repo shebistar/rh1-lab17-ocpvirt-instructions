@@ -1,19 +1,19 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: exercise3
+  name: "exercise3"
   namespace: "namespace-{{ user }}"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
-    app: exercise3
+    app: "exercise3"
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
       kind: DataVolume
       metadata:
         creationTimestamp: null
-        name: exercise3
+        name: "exercise3"
       spec:
         sourceRef:
           kind: DataSource
@@ -32,7 +32,7 @@ spec:
         vm.kubevirt.io/workload: server
       creationTimestamp: null
       labels:
-        kubevirt.io/domain: exercise3
+        kubevirt.io/domain: "exercise3"
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
@@ -40,7 +40,7 @@ spec:
       domain:
         cpu:
           cores: 1
-          sockets: 1
+          sockets: 2
           threads: 1
         devices:
           disks:
@@ -65,7 +65,7 @@ spec:
         machine:
           type: pc-q35-rhel9.4.0
         memory:
-          guest: 2Gi
+          guest: 4Gi
         resources: {}
       networks:
         - name: default
@@ -73,7 +73,7 @@ spec:
       terminationGracePeriodSeconds: 180
       volumes:
         - dataVolume:
-            name: exercise3
+            name: "exercise3"
           name: rootdisk
         - cloudInitNoCloud:
             userData: |-
@@ -81,10 +81,14 @@ spec:
               user: "lab-user"
               password: redhat1
               chpasswd: { expire: False }
+              packages:
+                - httpd
+                - curl
+
+              runcmd:
+                - systemctl enable httpd
+                - systemctl start httpd
+                - echo "Hello from exercise3, you are doing a great job!" > /var/www/html/index.html
+
+              final_message: "HTTP server is configured, file downloaded and extracted!"
           name: cloudinitdisk
-      nodeSelector:
-        node-role.kubernetes.io/baremetal: ""
-      tolerations:
-      - effect: NoSchedule
-        key: bare_metal
-        value: "true"
