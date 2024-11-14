@@ -17,7 +17,7 @@ spec:
       spec:
         sourceRef:
           kind: DataSource
-          name: fedora
+          name: rhel9
           namespace: openshift-virtualization-os-images
         storage:
           resources:
@@ -28,7 +28,7 @@ spec:
     metadata:
       annotations:
         vm.kubevirt.io/flavor: small
-        vm.kubevirt.io/os: fedora
+        vm.kubevirt.io/os: rhel9
         vm.kubevirt.io/workload: server
       creationTimestamp: null
       labels:

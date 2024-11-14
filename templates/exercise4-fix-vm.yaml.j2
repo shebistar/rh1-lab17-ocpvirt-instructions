@@ -17,7 +17,7 @@ spec:
       spec:
         sourceRef:
           kind: DataSource
-          name: fedora
+          name: rhel9
           namespace: openshift-virtualization-os-images
         storage:
           resources:
@@ -25,12 +25,10 @@ spec:
               storage: 30Gi
   running: true
   template:
-    nodeSelector:
-      "{{ user }}": "true"
     metadata:
       annotations:
         vm.kubevirt.io/flavor: small
-        vm.kubevirt.io/os: fedora
+        vm.kubevirt.io/os: rhel9
         vm.kubevirt.io/workload: server
       creationTimestamp: null
       labels:
@@ -38,6 +36,8 @@ spec:
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
+      nodeSelector:
+        "{{ user }}": "true"
       architecture: amd64
       domain:
         cpu:
