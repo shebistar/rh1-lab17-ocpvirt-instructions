@@ -16,11 +16,11 @@
 
     - name: Extract the core count from exercise4 VM spec
       ansible.builtin.set_fact:
-        core_count: "{{ vm_info.resources[0].spec.template.spec.domain.cpu.cores | int }}"
+        sockets_count: "{{ vm_info.resources[0].spec.template.spec.domain.cpu.sockets | int }}"
 
     - name: Assert that core_count is 2 in order to a VM get 4 vCPU
       ansible.builtin.assert:
         that:
-          - core_count == "2"
+          - sockets_count == "4"
         success_msg: "Good job, the development team are happy that you solved the problem!"
         fail_msg: "Ops, something went wrong and you have to fix the exercise!"
