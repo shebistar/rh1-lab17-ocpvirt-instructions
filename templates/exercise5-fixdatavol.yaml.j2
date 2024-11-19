@@ -2,7 +2,7 @@ apiVersion: cdi.kubevirt.io/v1beta1
 kind: DataVolume
 metadata:
   name: exercise5-vol-data1
-  namespace: namespace-user1
+  namespace: namespace-{{ user }}
 spec:
   preallocation: false
   source:

@@ -2,7 +2,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: exercise3
-  namespace: "namespace-user1"
+  namespace: "namespace-{{ user }}"
 spec:
   port:
     targetPort: 8080

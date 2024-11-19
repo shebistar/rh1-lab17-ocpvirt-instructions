@@ -2,7 +2,7 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: "exercise5"
-  namespace: "namespace-user1"
+  namespace: "namespace-{{ user }}"
 spec:
   dataVolumeTemplates:
     - metadata:
