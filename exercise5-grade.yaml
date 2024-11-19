@@ -1,0 +1,53 @@
+- name: Grading the exercise5
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Exercise5 - Get Virtual Machine status
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-user1"
+        name: exercise5
+      register: exercise5_info
+
+    - name: Exercise5 - Check if VM is running
+      ansible.builtin.debug:
+        msg: "The Virtual Machine is running."
+      when: exercise5_info.resources[0].status.printableStatus == "Running"
+
+    - name: Exercise5 - Check if VM is not running
+      ansible.builtin.debug:
+        msg: "The Virtual Machine is NOT running."
+      when: exercise5_info.resources[0].status.printableStatus != "Running"
+
+    - name: Extract disk information
+      debug:
+        msg: >
+          VM "{{ exercise5_info.resources[0].metadata.name }}" has the following disks:
+          {{ exercise5_info.resources[0].spec.template.spec.domain.devices.disks | default([]) }}
+
+    - name: Check if the specified disk exists
+      set_fact:
+        disk_exists: >
+          {{ exercise5_info.resources[0].spec.template.spec.domain.devices.disks
+             | selectattr('name', 'equalto', 'exercise5-vol-data1')
+             | list
+             | length > 0 }}
+
+    - name: Debug disk existence
+      debug:
+        msg: >
+          Disk 'exercise5-vol-data1' 
+          {% if disk_exists %}
+          exists in the VM configuration.
+          {% else %}
+          does not exist in the VM configuration.
+          {% endif %}
+
+    - name: Fail if the specified disk does not exist
+      fail:
+        msg: "The disk 'exercise5-vol-data1' does not exist in the VM configuration."
+      when: not disk_exists
