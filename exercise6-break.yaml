@@ -1,0 +1,47 @@
+- name: Preparing the exercise6
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+    vm_name: "exercise6"
+    namespace: "namespace-{{ user }}"
+
+  tasks:
+    - name: Check if VM exists and get details
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        api_version: kubevirt.io/v1
+        name: "{{ vm_name }}"
+        namespace: "{{ namespace }}"
+      register: vm_info
+
+    - name: If exists and running stop VirtualMachine 
+      when: vm_info.resources | length > 0 and vm_info.resources[0].spec.running == true
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: kubevirt.io/v1
+          kind: VirtualMachine
+          metadata:
+            name: "{{ vm_name }}"
+            namespace: "{{ namespace }}"
+          spec:
+            running: false
+      register: stop_vm
+
+    - name: Wait for VirtualMachine to stop
+      when: stop_vm is defined
+      ansible.builtin.wait_for:
+        timeout: 60
+      delay: 10
+
+    - name: Breaking the exercise6
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise6-create-vm.yaml.j2"
+      register: breakvm
+      until: breakvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: breakvm is failed or breakvm.failed

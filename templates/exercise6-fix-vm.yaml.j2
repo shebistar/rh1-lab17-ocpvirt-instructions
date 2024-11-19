@@ -1,23 +1,23 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: "exercise4"
+  name: exercise6
   namespace: "namespace-{{ user }}"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
-    app: "exercise4"
+    app: exercise6
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
       kind: DataVolume
       metadata:
         creationTimestamp: null
-        name: "exercise4"
+        name: exercise6
       spec:
         sourceRef:
           kind: DataSource
-          name: rhel9
+          name: fedora
           namespace: openshift-virtualization-os-images
         storage:
           resources:
@@ -28,21 +28,19 @@ spec:
     metadata:
       annotations:
         vm.kubevirt.io/flavor: small
-        vm.kubevirt.io/os: rhel9
+        vm.kubevirt.io/os: fedora
         vm.kubevirt.io/workload: server
       creationTimestamp: null
       labels:
-        kubevirt.io/domain: "exercise4"
+        kubevirt.io/domain: exercise6
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
-      nodeSelector:
-        "user1": "true"
       architecture: amd64
       domain:
         cpu:
           cores: 1
-          sockets: 4
+          sockets: 2
           threads: 1
         devices:
           disks:
@@ -75,7 +73,7 @@ spec:
       terminationGracePeriodSeconds: 180
       volumes:
         - dataVolume:
-            name: "exercise4"
+            name: exercise6
           name: rootdisk
         - cloudInitNoCloud:
             userData: |-
@@ -83,29 +81,4 @@ spec:
               user: "lab-user"
               password: redhat1
               chpasswd: { expire: False }
-              packages:
-                - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/s/stress-1.0.4-29.el9.x86_64.rpm
-              write_files:
-                - path: /etc/systemd/system/stress.service
-                  permissions: '0644'
-                  content: |
-                    [Unit]
-                    Description=stress
-                    After=network.target
-
-                    [Service]
-                    Type=simple
-                    ExecStart=stress --cpu 2 --timeout 7200
-                    Restart=always
-                    RestartSec=5s
-                    StandardOutput=journal
-                    StandardError=journal
-
-                    [Install]
-                    WantedBy=multi-user.target
-
-              runcmd:
-                - systemctl daemon-reload
-                - systemctl enable --now stress.service
-
           name: cloudinitdisk

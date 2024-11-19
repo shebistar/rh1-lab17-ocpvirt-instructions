@@ -1,0 +1,47 @@
+- name: Fixing the exercise6
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Set VM to stopped state
+      kubernetes.core.k8s:
+        namespace: "namespace-{{ user }}"
+        kind: VirtualMachine
+        name: exercise6
+        state: present
+        definition:
+          spec:
+            running: false
+      register: stopvm
+      until: stopvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: stopvm is failed or stopvm.failed
+
+    - name: Fixing exercise6 virtual machine
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise6-fix-vm.yaml.j2"
+      register: exercise6vm
+      until: exercise6vm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exercise6vm is failed or exercise6vm.failed
+
+    - name: Set VM to start state
+      kubernetes.core.k8s:
+        namespace: "namespace-{{ user }}"
+        kind: VirtualMachine
+        name: exercise6
+        state: present
+        definition:
+          spec:
+            running: true
+      register: startvm
+      until: startvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: startvm is failed or startvm.failed
