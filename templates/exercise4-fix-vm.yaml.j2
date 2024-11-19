@@ -37,7 +37,7 @@ spec:
         network.kubevirt.io/headlessService: headless
     spec:
       nodeSelector:
-        "user1": "true"
+        "{{ user }}": "true"
       architecture: amd64
       domain:
         cpu:

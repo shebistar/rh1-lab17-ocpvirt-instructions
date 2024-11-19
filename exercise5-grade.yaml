@@ -9,7 +9,7 @@
     - name: Exercise5 - Get Virtual Machine status
       kubernetes.core.k8s_info:
         kind: VirtualMachine
-        namespace: "namespace-user1"
+        namespace: "namespace-{{ user }}"
         name: exercise5
       register: exercise5_info
 

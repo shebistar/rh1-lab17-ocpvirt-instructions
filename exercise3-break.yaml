@@ -50,7 +50,7 @@
       kubernetes.core.k8s_info:
         api_version: kubevirt.io/v1
         kind: VirtualMachineInstance
-        namespace: "namespace-user1"
+        namespace: "namespace-{{ user }}"
         name: "exercise3"
       register: exercise3info
       until: "exercise3info.resources | length > 0 and exercise3info.resources[0].status.phase == 'Running'"
