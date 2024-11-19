@@ -1,0 +1,39 @@
+- name: Preparing the exercise5
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Exercise5 - Removing data disk 1 from virtual machine
+      ansible.builtin.command: virtctl removevolume exercise5 --volume-name=exercise5-vol-data1 --persist
+      register: exercise5datadisk1
+
+    - name: Exercise5 - Removing data volume from virtual machine
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise5-breakdatavol.yaml.j2"
+      register: exercise5datavol
+      until: exercise5datavol is succeeded
+      retries: 5
+      delay: 10
+      failed_when: exercise5datavol is failed or exercise5datavol.failed
+
+    - name: Exercise5 - Wait for removing disk and data volume
+      pause:
+        seconds: 5
+
+    - name: Exercise5 - Fixing data volume to virtual machine
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise5-fixdatavol.yaml.j2"
+      register: exercise5fixdatavol
+      until: exercise5fixdatavol is succeeded
+      retries: 5
+      delay: 10
+      failed_when: exercise5fixdatavol is failed or exercise5fixdatavol.failed
+
+    - name: Exercise5 - Fixing data disk 1 to virtual machine
+      ansible.builtin.command: virtctl addvolume exercise5 --volume-name=exercise5-vol-data1 --persist
+      register: exercise5fixdatadisk1

@@ -2,7 +2,7 @@ apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
   name: "exercise4"
-  namespace: "namespace-{{ user }}"
+  namespace: "namespace-user1"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
@@ -37,7 +37,7 @@ spec:
         network.kubevirt.io/headlessService: headless
     spec:
       nodeSelector:
-        "{{ user }}": "true"
+        "user1": "true"
       architecture: amd64
       domain:
         cpu:
