@@ -1,9 +1,6 @@
 - name: Admin configure users prerequesites
   hosts: localhost
 
-  vars:
-    n_users: 4
-
   tasks:
     - name: Check if admin is authenticated with OpenShift 4
       ansible.builtin.command: oc whoami
@@ -35,7 +32,7 @@
       retries: 60
       delay: 10
       failed_when: removeoadp is failed or removeoadp.failed
-      with_sequence: start=1 end={{ n_users }}
+      with_sequence: start=1 end={{ num_users }}
 
     - name: Ensure users namespace exists
       kubernetes.core.k8s:
@@ -50,7 +47,7 @@
       retries: 60
       delay: 10
       failed_when: namespaceusers is failed or namespaceusers.failed
-      with_sequence: start=1 end={{ n_users }}
+      with_sequence: start=1 end={{ num_users }}
 
     - name: Grant cluster-admin role to users in their namespaces
       kubernetes.core.k8s:
@@ -78,13 +75,13 @@
       retries: 60
       delay: 10
       failed_when: rbacusers is failed or rbacusers.failed
-      with_sequence: start=1 end={{ n_users }}
+      with_sequence: start=1 end={{ num_users }}
 
     # - name: Creating bastion vms on users namespace
     #   kubernetes.core.k8s:
     #     state: present
     #     template: "bastion.yaml.j2"
-    #   with_sequence: start=1 end={{ n_users }}
+    #   with_sequence: start=1 end={{ num_users }}
     #   register: bastion
     #   until: bastion is succeeded
     #   retries: 60
@@ -213,4 +210,4 @@
     - name: Add label userX=true to all worker nodes
       ansible.builtin.command:
         cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length - 1 ] }}" user{{ item | int }}="true"
-      with_sequence: start=1 end={{ n_users }}
+      with_sequence: start=1 end={{ num_users }}
