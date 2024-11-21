@@ -6,6 +6,18 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
+    - block:
+        - name: Try to fetch namespaces to check connection
+          kubernetes.core.k8s_info:
+            api_version: v1
+            kind: Namespace
+          register: namespaces
+          no_log: true
+      rescue:
+        - name: Display error message
+          ansible.builtin.fail:
+            msg: "You are not connected into the cluster. Please use the lab instruction to connect on the cluster using user '{{ user }}'"
+
     - name: Fixing exercise3 virtual machine
       kubernetes.core.k8s:
         state: present
