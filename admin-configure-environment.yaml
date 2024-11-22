@@ -2,12 +2,12 @@
   hosts: localhost
 
   tasks:
-    - name: Check if admin is authenticated with OpenShift 4
-      ansible.builtin.command: oc whoami
-      register: oc_whoami_result
-      changed_when: false
-      ignore_errors: true
-      no_log: true
+    # - name: Check if admin is authenticated with OpenShift 4
+    #   ansible.builtin.command: oc whoami
+    #   register: oc_whoami_result
+    #   changed_when: false
+    #   ignore_errors: true
+    #   no_log: true
 
     # - name: Fail if not connected on cluster
     #   ansible.builtin.fail:
