@@ -17,7 +17,7 @@
     - name: Fail if not logged in as admin
       ansible.builtin.fail:
         msg: "You are logged in but you are not 'admin' user. Please log in with user 'admin'"
-      when: oc_whoami_result.stdout != "admin"
+      when: oc_whoami_result.stdout != "admin" or oc_whoami_result.stdout != "system:admin"
 
     - name: Removing OADP projects
       kubernetes.core.k8s:
