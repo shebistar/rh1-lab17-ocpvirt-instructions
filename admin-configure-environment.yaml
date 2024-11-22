@@ -9,10 +9,10 @@
       ignore_errors: true
       no_log: true
 
-    - name: Fail if not connected on cluster
-      ansible.builtin.fail:
-        msg: "You are not logged into the cluster. Please use 'oc login' and re-run this playbook"
-      when: oc_whoami_result.rc != 0
+    # - name: Fail if not connected on cluster
+    #   ansible.builtin.fail:
+    #     msg: "You are not logged into the cluster. Please use 'oc login' and re-run this playbook"
+    #   when: oc_whoami_result.rc != 0
 
     # - name: Fail if not logged in as admin
     #   ansible.builtin.fail:
