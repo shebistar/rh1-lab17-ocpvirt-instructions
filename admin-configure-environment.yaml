@@ -211,3 +211,12 @@
       ansible.builtin.command:
         cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length - 1 ] }}" user{{ item | int }}="true"
       with_sequence: start=1 end={{ num_users }}
+
+    - name: New /etc/bashrc file
+      ansible.builtin.template:
+        src: bashrc-bastion.j2
+        dest: "/etc/bashrc"
+        mode: '0644'
+      become: true
+      become_method: sudo
+      ignore_errors: true
