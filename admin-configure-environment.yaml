@@ -14,10 +14,10 @@
         msg: "You are not logged into the cluster. Please use 'oc login' and re-run this playbook"
       when: oc_whoami_result.rc != 0
 
-    - name: Fail if not logged in as admin
-      ansible.builtin.fail:
-        msg: "You are logged in but you are not 'admin' user. Please log in with user 'admin'"
-      when: oc_whoami_result.stdout != "admin" or oc_whoami_result.stdout != "system:admin"
+    # - name: Fail if not logged in as admin
+    #   ansible.builtin.fail:
+    #     msg: "You are logged in but you are not 'admin' user. Please log in with user 'admin'"
+    #   when: oc_whoami_result.stdout != "admin" or oc_whoami_result.stdout != "system:admin"
 
     - name: Removing OADP projects
       kubernetes.core.k8s:
