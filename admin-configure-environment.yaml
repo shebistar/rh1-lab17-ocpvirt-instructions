@@ -212,13 +212,13 @@
         cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length - 1 ] }}" user{{ item | int }}="true"
       with_sequence: start=1 end={{ num_users }}
 
-    - name: New /etc/bashrc file
-      ansible.builtin.template:
-        src: bashrc-bastion.j2
-        dest: "/etc/bashrc"
-        mode: '0644'
-      become: true
-      become_method: sudo
+    # - name: New /etc/bashrc file
+    #   ansible.builtin.template:
+    #     src: bashrc-bastion.j2
+    #     dest: "/etc/bashrc"
+    #     mode: '0644'
+    #   become: true
+    #   become_method: sudo
 
     - name: Clone tmux repo to lab-user
       ansible.builtin.git:
@@ -230,3 +230,20 @@
       ansible.builtin.shell:
         cmd: /home/lab-user/tmux/configure-local.sh
       ignore_errors: true
+
+    - name: Create configure-tmux-users.sh file
+      ansible.builtin.template:
+        src: configure-tmux-users.sh.j2
+        dest: '/home/lab-user/configure-tmux-users.sh'
+        mode: '0755'
+
+    - name: Copy configure-tmux-users.sh to all users
+      ansible.builtin.copy:
+        src: '/home/lab-user/configure-tmux-users.sh'
+        dest: '/home/user{{ item | int }}/configure-tmux-users.sh'
+        owner: "user{{ item | int }}"
+        group: "user{{ item | int }}"
+        mode: '0755'
+      with_sequence: start=1 end={{ num_users }}
+      ignore_errors: true
+
