@@ -1,11 +1,11 @@
 #!/bin/bash
 
 echo "Configuring .bashrc, vimrc and .tmux.conf files"
-cp {.bashrc,.tmux.conf,.vimrc} /home/{{ user }}
-mkdir -p /home/{{ user }}/.tmux/
-cp ocp-project.tmux ocp-cluster.tmux /home/{{ user }}/.tmux/
-chown {{ user }}:$GROUP /home/{{ user }}/{.bashrc,.tmux.conf,.vimrc}
-chown -R {{ user }}:$GROUP /home/{{ user }}/.tmux/
-echo "Copying tmux-sessions dir to '{{ user }}' home"
-cp -R tmux-sessions /home/{{ user }}/
+cp {.bashrc,.tmux.conf,.vimrc} /home/user{{ item | int }}
+mkdir -p /home/user{{ item | int }}/.tmux/
+cp ocp-project.tmux ocp-cluster.tmux /home/user{{ item | int }}/.tmux/
+chown user{{ item | int }}:user{{ item | int }} /home/user{{ item | int }}/{.bashrc,.tmux.conf,.vimrc}
+chown -R user{{ item | int }}:user{{ item | int }} /home/user{{ item | int }}/.tmux/
+echo "Copying tmux-sessions dir to 'user{{ item | int }}' home"
+cp -R tmux-sessions /home/user{{ item | int }}/
 echo "Done"
