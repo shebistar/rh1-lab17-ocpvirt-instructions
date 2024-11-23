@@ -6,7 +6,16 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Set VM to stopped state
+
+    - name: Check if exercise1 VM exists
+      kubernetes.core.k8s_info:
+        namespace: "namespace-{{ user }}"
+        kind: VirtualMachine
+        name: exercise1
+      register: vm_info
+      failed_when: false
+
+    - name: Stop VM exercise1 if it exists
       kubernetes.core.k8s:
         namespace: "namespace-{{ user }}"
         kind: VirtualMachine
@@ -19,7 +28,7 @@
       until: stopvm is succeeded
       retries: 60
       delay: 10
-      failed_when: stopvm is failed or stopvm.failed
+      when: vm_info.resources | length > 0
 
     - name: Fixing the exercise1
       kubernetes.core.k8s:
