@@ -219,4 +219,14 @@
         mode: '0644'
       become: true
       become_method: sudo
+
+    - name: Clone tmux repo to lab-user
+      ansible.builtin.git:
+        repo: git@github.com:lgchiaretto/tmux.git
+        dest: /home/lab-user/tmux
+      ignore_errors: true
+
+    - name: Execute configure-local.sh script
+      ansible.builtin.shell:
+        cmd: /home/lab-user/tmux/configure-local.sh
       ignore_errors: true
