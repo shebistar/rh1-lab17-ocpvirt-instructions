@@ -45,3 +45,15 @@
       retries: 60
       delay: 10
       failed_when: startvm is failed or startvm.failed
+
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise4"
+      register: exercise4info
+      until: "exercise4info.resources | length > 0 and exercise4info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise4info.resources | length == 0
