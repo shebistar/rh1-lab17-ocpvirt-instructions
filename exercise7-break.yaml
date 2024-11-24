@@ -43,9 +43,8 @@
             template:
               spec:
                 domain:
-                  resources:
-                    requests:
-                      memory: "8Gi"
+                  memory:
+                    guest: "8Gi"
 
     - name: Restore o snapshot
       kubernetes.core.k8s:
