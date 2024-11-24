@@ -8,26 +8,6 @@ case $- in
       *) return;;
 esac
 
-function openshift_prompt {
-    oc whoami 2&>1 > /dev/null
-
-    OPENSHIFT_CONNECTED=$?
-    if [[ $OPENSHIFT_CONNECTED -eq 1 ]]; then
-      echo -e "(N/A)"
-    else
-        OPENSHIFT_CLUSTER=$(oc whoami --show-server  2>/dev/null | awk -F '.' '{ print $2 }')
-        OPENSHIFT_PROJECT=$(oc project -q 2>/dev/null)
-
-        if [[ $OPENSHIFT_PROJECT == "" ]]; then
-            OPENSHIFT_PROJECT="<no-project>"
-        fi
-
-        OPENSHIFT_VERSION=$(oc version | grep Server | awk -F' ' '{print $3}')
-
-        echo -e "(${OPENSHIFT_CLUSTER}:${OPENSHIFT_PROJECT})"
-    fi
-}
-
 shopt -s checkwinsize
 
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
@@ -45,9 +25,9 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1="\[\033[38;5;30m\]\$(openshift_prompt)\[\033[38;5;112m\] \u\[\033[0m\]\[\033[38;5;15m\]@\[\033[0m\]\[\033[38;5;172m\]\h\[\033[0m\]:\[\033[38;5;30m\]\w/\[\033[0m\] "
+    PS1="\[\033[38;5;112m\]\u\[\]\[\033[38;5;15m\]@\[\]\[\033[38;5;172m\]\h\[\]\[\033[38;5;15m\]:\[\]\[\033[38;5;30m\]\w/\[\]\[\]\[\033[38;5;112m\]$(parse_git_branch)\[\]\[\033[38;5;15m\] "
 else
-    PS1="\[\033[38;5;112m\]\$(openshift_prompt)\u\[\]\[\033[38;5;15m\]@\[\]\[\033[38;5;172m\]\h\[\]\[\033[38;5;15m\]:\[\]\[\033[38;5;30m\]\w/\[\]\[\] "
+    PS1="\[\033[38;5;112m\]\u\[\]\[\033[38;5;15m\]@\[\]\[\033[38;5;172m\]\h\[\]\[\033[38;5;15m\]:\[\]\[\033[38;5;30m\]\w/\[\]\[\]\[\033[38;5;112m\]$(parse_git_branch)\[\]\[\033[38;5;15m\] "
 fi
 unset color_prompt force_color_prompt
 
