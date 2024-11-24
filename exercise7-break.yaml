@@ -34,10 +34,12 @@
 
     - name: Change memory to 8GB
       kubernetes.core.k8s:
+        state: present
         kind: VirtualMachine
-        namespace: 'namespace-{{ user }}'
+        api_version: kubevirt.io/v1
         name: exercise7
-        merge_type: strategic-merge
+        namespace: 'namespace-{{ user }}'
+        merge_type: merge
         definition:
           spec:
             template:
