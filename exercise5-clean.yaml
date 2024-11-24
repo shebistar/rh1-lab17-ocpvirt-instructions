@@ -6,11 +6,11 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    
+
     - name: Exercise5 - Removing data disk 1 from virtual machine
       ansible.builtin.command: virtctl removevolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5datadisk1
-      
+
     - name: Exercise5 - Delete virtual machine
       kubernetes.core.k8s:
         state: absent
@@ -30,3 +30,13 @@
       retries: 5
       delay: 10
       failed_when: exercise5datavol is failed or exercise5datavol.failed
+
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise5"
+      register: cleanvm
+      retries: "60"
+      delay: "2"
+      until: cleanvm.resources | length == 0

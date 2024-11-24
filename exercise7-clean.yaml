@@ -10,8 +10,18 @@
       kubernetes.core.k8s:
         state: absent
         template: "exercise7-vm.yaml.j2"
-      register: breakvm
-      until: breakvm is succeeded
+      register: cleanvm
+      until: cleanvm is succeeded
       retries: 60
       delay: 10
-      failed_when: breakvm is failed or breakvm.failed
+      failed_when: cleanvm is failed or cleanvm.failed
+
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise7"
+      register: cleanvm
+      retries: "60"
+      delay: "2"
+      until: cleanvm.resources | length == 0

@@ -10,38 +10,48 @@
       kubernetes.core.k8s:
         state: absent
         template: "exercise3-vm.yaml.j2"
-      register: exerciseXvm
-      until: exerciseXvm is succeeded
+      register: exercise3vm
+      until: exercise3vm is succeeded
       retries: 60
       delay: 10
-      failed_when: exerciseXvm is failed or exerciseXvm.failed
+      failed_when: exercise3vm is failed or exercise3vm.failed
 
     - name: Removing exercise3 service
       kubernetes.core.k8s:
         state: absent
         template: "exercise3-service.yaml.j2"
-      register: exerciseXsvc
-      until: exerciseXsvc is succeeded
+      register: exercise3svc
+      until: exercise3svc is succeeded
       retries: 60
       delay: 10
-      failed_when: exerciseXsvc is failed or exerciseXsvc.failed
+      failed_when: exercise3svc is failed or exercise3svc.failed
 
     - name: Removing exercise3 route
       kubernetes.core.k8s:
         state: absent
         template: "exercise3-break-route.yaml.j2"
-      register: exerciseXroute
-      until: exerciseXroute is succeeded
+      register: exercise3route
+      until: exercise3route is succeeded
       retries: 60
       delay: 10
-      failed_when: exerciseXroute is failed or exerciseXroute.failed
+      failed_when: exercise3route is failed or exercise3route.failed
 
     - name: Removing curl image pod for tests
       kubernetes.core.k8s:
         state: absent
         template: "curl-pod.yaml.j2"
-      register: exerciseXcurlpod
-      until: exerciseXcurlpod is succeeded
+      register: exercise3curlpod
+      until: exercise3curlpod is succeeded
       retries: 60
       delay: 10
-      failed_when: exerciseXcurlpod is failed or exerciseXcurlpod.failed
+      failed_when: exercise3curlpod is failed or exercise3curlpod.failed
+
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise3"
+      register: cleanvm
+      retries: "60"
+      delay: "2"
+      until: cleanvm.resources | length == 0

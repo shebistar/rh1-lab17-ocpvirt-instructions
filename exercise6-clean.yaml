@@ -15,3 +15,13 @@
       retries: 60
       delay: 10
       failed_when: exercise6vm is failed or exercise6vm.failed
+
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise6"
+      register: cleanvm
+      retries: "60"
+      delay: "2"
+      until: cleanvm.resources | length == 0
