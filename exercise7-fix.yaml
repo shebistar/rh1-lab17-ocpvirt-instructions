@@ -34,6 +34,16 @@
       delay: 10
       when: ex1vm.resources | length > 0
 
+    - name: Wait for VirtualMachine to stop
+      kubernetes.core.k8s_info:
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise7"
+      register: exercise7vm
+      retries: "60"
+      delay: "10"
+      until: exercise7vm.resources | length == 0
+
     - name: Restore the snapshot
       kubernetes.core.k8s:
         kind: VirtualMachineRestore
