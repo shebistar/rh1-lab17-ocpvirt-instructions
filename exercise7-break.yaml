@@ -17,6 +17,18 @@
       delay: 10
       failed_when: breakvm is failed or breakvm.failed
 
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise7"
+      register: exercise7info
+      until: "exercise7info.resources | length > 0 and exercise7info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise7info.resources | length == 0
+
     - name: Create the VM snapshot
       kubernetes.core.k8s:
         kind: VirtualMachineSnapshot
