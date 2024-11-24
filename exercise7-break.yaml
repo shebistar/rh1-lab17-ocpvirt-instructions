@@ -44,18 +44,8 @@
               kind: VirtualMachine
               name: exercise7
 
-    # - name: Restore o snapshot
-    #   kubernetes.core.k8s:
-    #     kind: VirtualMachineRestore
-    #     namespace: 'namespace-{{ user }}'
-    #     definition:
-    #       apiVersion: snapshot.kubevirt.io/v1alpha1
-    #       kind: VirtualMachineRestore
-    #       metadata:
-    #         name: restore-exercise7-snapshot
-    #       spec:
-    #         target:
-    #           apiGroup: kubevirt.io
-    #           kind: VirtualMachine
-    #           name: exercise7
-    #         virtualMachineSnapshotName: exercise7-snapshot
+    - name: Create exercise7-restoresnapshot.yaml script
+      ansible.builtin.template:
+        src: 'exercise7-restoresnapshot.yaml.j2'
+        dest: '/home/{{ user }}/configure-tmux-users.sh'
+        mode: '0644'
