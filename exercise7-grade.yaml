@@ -19,13 +19,7 @@
         msg: "Ooops, the snapshot has not been restored."
       when: vm_restore_info.resources | length == 0
 
-    # - name: Validar se o status está completo
-    #   ansible.builtin.fail:
-    #     msg: "O recurso VirtualMachineRestore 'restore-exercise7-snapshot' não está com 'complete: true'."
-    #   when: vm_restore_info.resources[0].status.complete is not defined or
-    #         vm_restore_info.resources[0].status.complete != true
-
-    - name: Check if success
+    - name: Check if snapshot has been restored
       ansible.builtin.debug:
         msg: "Nice one, the snapshot has been restored!"
       when: vm_restore_info.resources[0].status.complete is defined and
