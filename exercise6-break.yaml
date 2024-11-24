@@ -43,7 +43,7 @@
         name: "exercise6"
       register: exercise6vm
       retries: "60"
-      delay: "2"
+      delay: "10"
       until: exercise6vm.resources | length == 0
 
     - name: Breaking the exercise6

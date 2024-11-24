@@ -21,6 +21,16 @@
       delay: 10
       failed_when: stopvm is failed or stopvm.failed
 
+    - name: Wait for VirtualMachine to stop
+      kubernetes.core.k8s_info:
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise6"
+      register: exercise6vm
+      retries: "60"
+      delay: "10"
+      until: exercise6vm.resources | length == 0
+
     - name: Fixing exercise6 virtual machine
       kubernetes.core.k8s:
         state: present
