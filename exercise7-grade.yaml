@@ -1,0 +1,32 @@
+- name: Grading the exercise7
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Get the VirtualMachineRestore
+      kubernetes.core.k8s_info:
+        kind: VirtualMachineRestore
+        api_version: snapshot.kubevirt.io/v1alpha1
+        namespace: 'namespace-{{ user }}'
+        name: restore-exercise7-snapshot
+      register: vm_restore_info
+
+    - name: Check if snapshot has not been restored
+      ansible.builtin.fail:
+        msg: "Ooops, the snapshot has not been restored."
+      when: vm_restore_info.resources | length == 0
+
+    # - name: Validar se o status está completo
+    #   ansible.builtin.fail:
+    #     msg: "O recurso VirtualMachineRestore 'restore-exercise7-snapshot' não está com 'complete: true'."
+    #   when: vm_restore_info.resources[0].status.complete is not defined or
+    #         vm_restore_info.resources[0].status.complete != true
+
+    - name: Check if success
+      ansible.builtin.debug:
+        msg: "Nice one, the snapshot has been restored!"
+      when: vm_restore_info.resources[0].status.complete is defined and
+            vm_restore_info.resources[0].status.complete == true
