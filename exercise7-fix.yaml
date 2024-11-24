@@ -14,7 +14,7 @@
       register: ex1vm
       failed_when: false
 
-    - name: Fail if not logged in as admin
+    - name: Fail if not executed break first
       ansible.builtin.fail:
         msg: "You must run 'lab break exercise7' before run the lab fix"
       when: ex1vm.resources | length == 0
