@@ -268,3 +268,39 @@
       become: true
       become_method: sudo
       ignore_errors: true
+
+    - name: Create the ClusterRole to user view server info
+      kubernetes.core.k8s:
+        kind: ClusterRole
+        namespace: 'namespace-user{{ item | int }}'
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: view-server-version
+          rules:
+            - apiGroups: ["config.openshift.io"]
+              resources: ["clusterversions"]
+              verbs: ["get"]
+      with_sequence: start=1 end={{ num_users }}
+      ignore_errors: true
+
+    - name: Create the ClusterRoleBinding to user view server info
+      kubernetes.core.k8s:
+        kind: ClusterRoleBinding
+        namespace: 'namespace-user{{ item | int }}'
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: view-server-version-binding
+          subjects:
+            - kind: User
+              name: '{{ user }}'
+              apiGroup: rbac.authorization.k8s.io
+          roleRef:
+            kind: ClusterRole
+            name: view-server-version
+            apiGroup: rbac.authorization.k8s.io
+      with_sequence: start=1 end={{ num_users }}
+      ignore_errors: true
