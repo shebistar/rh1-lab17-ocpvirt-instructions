@@ -231,19 +231,15 @@
         cmd: /home/lab-user/tmux/configure-local.sh
       ignore_errors: true
 
-    - name: Create configure-tmux-users.sh file
+    - name: Create configure-tmux-users.sh script
       ansible.builtin.template:
-        src: configure-tmux-users.sh.j2
+        src: 'configure-tmux-users.sh.j2'
         dest: '/home/lab-user/configure-tmux-users.sh'
         mode: '0755'
+      ignore_errors: true
 
     - name: Copy configure-tmux-users.sh to all users
-      ansible.builtin.copy:
-        src: '/home/lab-user/configure-tmux-users.sh'
-        dest: '/home/user{{ item | int }}/configure-tmux-users.sh'
-        owner: "user{{ item | int }}"
-        group: "user{{ item | int }}"
-        mode: '0755'
-      with_sequence: start=1 end={{ num_users }}
+      ansible.builtin.shell:
+        cmd: '/home/lab-user/configure-tmux-users.sh'
       ignore_errors: true
 

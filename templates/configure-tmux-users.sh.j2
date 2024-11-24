@@ -1,11 +1,13 @@
 #!/bin/bash
 
-echo "Configuring .bashrc, vimrc and .tmux.conf files"
-cp {.bashrc,.tmux.conf,.vimrc} /home/user{{ item | int }}
-mkdir -p /home/user{{ item | int }}/.tmux/
-cp ocp-project.tmux ocp-cluster.tmux /home/user{{ item | int }}/.tmux/
-chown user{{ item | int }}:user{{ item | int }} /home/user{{ item | int }}/{.bashrc,.tmux.conf,.vimrc}
-chown -R user{{ item | int }}:user{{ item | int }} /home/user{{ item | int }}/.tmux/
-echo "Copying tmux-sessions dir to 'user{{ item | int }}' home"
-cp -R tmux-sessions /home/user{{ item | int }}/
-echo "Done"
+for user in $(seq 1 {{ num_users }})
+do
+  echo "Configuring .bashrc, vimrc and .tmux.conf files"
+  cp $TMUX_GIT_DIR/{.bashrc,.tmux.conf,.vimrc} /home/user$user
+  mkdir -p /home/user$user/.tmux/
+  cp $TMUX_GIT_DIR/{ocp-project.tmux,ocp-cluster.tmux} /home/user$user/.tmux/
+  chown user$user:user$user /home/user$user/{.bashrc,.tmux.conf,.vimrc}
+  chmod 755 /home/user$user/.tmux/{ocp-project.tmux,ocp-cluster.tmux}
+  chown -R user$user:user$user /home/user$user/.tmux/
+  echo "Done"
+done
