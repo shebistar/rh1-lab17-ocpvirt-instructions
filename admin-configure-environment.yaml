@@ -238,15 +238,33 @@
         mode: '0755'
       ignore_errors: true
 
+    - name: Execute configure-tmux-users.sh script
+      ansible.builtin.shell:
+        cmd: /home/lab-user/configure-tmux-users.sh
+      become: true
+      become_method: sudo
+      ignore_errors: true
+
     - name: Clone tmux plugins repo to users
       ansible.builtin.git:
         repo: https://github.com/tmux-plugins/tpm.git
         dest: /home/user{{ item | int }}/.tmux/plugins/tpm
       with_sequence: start=1 end={{ num_users }}
+      become: true
+      become_method: sudo
       ignore_errors: true
 
     - name: Copy configure-tmux-users.sh to all users
       ansible.builtin.shell:
         cmd: '/home/lab-user/configure-tmux-users.sh'
       ignore_errors: true
-
+ 
+    - name: Substituir string no arquivo .tmux/file
+      ansible.builtin.replace:
+        path: /home/user{{ item | int }}/.tmux/ocp-cluster.tmux
+        regexp: '/tmp/dummy-file-tmux'
+        replace: '~/.dummy-file-tmux'
+      with_sequence: start=1 end={{ num_users }}
+      become: true
+      become_method: sudo
+      ignore_errors: true
