@@ -83,29 +83,5 @@ spec:
               user: "lab-user"
               password: redhat1
               chpasswd: { expire: False }
-              packages:
-                - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/s/stress-1.0.4-29.el9.x86_64.rpm
-              write_files:
-                - path: /etc/systemd/system/stress.service
-                  permissions: '0644'
-                  content: |
-                    [Unit]
-                    Description=stress
-                    After=network.target
-
-                    [Service]
-                    Type=simple
-                    ExecStart=stress --cpu 2 --timeout 7200
-                    Restart=always
-                    RestartSec=5s
-                    StandardOutput=journal
-                    StandardError=journal
-
-                    [Install]
-                    WantedBy=multi-user.target
-
-              runcmd:
-                - systemctl daemon-reload
-                - systemctl enable --now stress.service
 
           name: cloudinitdisk
