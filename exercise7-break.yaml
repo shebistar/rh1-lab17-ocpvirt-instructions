@@ -32,7 +32,7 @@
               kind: VirtualMachine
               name: exercise7
 
-    - name: Change memory to 8GB
+    - name: Change cpu to 4
       kubernetes.core.k8s:
         state: present
         kind: VirtualMachine
@@ -45,8 +45,8 @@
             template:
               spec:
                 domain:
-                  memory:
-                    guest: "8Gi"
+                  cpu:
+                    sockets: 4
 
     - name: Restore o snapshot
       kubernetes.core.k8s:
