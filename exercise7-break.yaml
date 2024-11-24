@@ -32,34 +32,18 @@
               kind: VirtualMachine
               name: exercise7
 
-    - name: Change cpu to 4
-      kubernetes.core.k8s:
-        state: present
-        kind: VirtualMachine
-        api_version: kubevirt.io/v1
-        name: exercise7
-        namespace: 'namespace-{{ user }}'
-        merge_type: merge
-        definition:
-          spec:
-            template:
-              spec:
-                domain:
-                  cpu:
-                    sockets: 4
-
-    - name: Restore o snapshot
-      kubernetes.core.k8s:
-        kind: VirtualMachineRestore
-        namespace: 'namespace-{{ user }}'
-        definition:
-          apiVersion: snapshot.kubevirt.io/v1alpha1
-          kind: VirtualMachineRestore
-          metadata:
-            name: restore-exercise7-snapshot
-          spec:
-            target:
-              apiGroup: kubevirt.io
-              kind: VirtualMachine
-              name: exercise7
-            virtualMachineSnapshotName: exercise7-snapshot
+    # - name: Restore o snapshot
+    #   kubernetes.core.k8s:
+    #     kind: VirtualMachineRestore
+    #     namespace: 'namespace-{{ user }}'
+    #     definition:
+    #       apiVersion: snapshot.kubevirt.io/v1alpha1
+    #       kind: VirtualMachineRestore
+    #       metadata:
+    #         name: restore-exercise7-snapshot
+    #       spec:
+    #         target:
+    #           apiGroup: kubevirt.io
+    #           kind: VirtualMachine
+    #           name: exercise7
+    #         virtualMachineSnapshotName: exercise7-snapshot

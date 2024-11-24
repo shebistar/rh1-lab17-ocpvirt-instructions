@@ -1,4 +1,4 @@
-- name: Cleaning the exercise2
+- name: Cleaning the exercise7
   hosts: localhost
   gather_facts: true
 
@@ -6,10 +6,10 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Clean the exercise2
+    - name: Clean the exercise7
       kubernetes.core.k8s:
         state: absent
-        template: "exercise2-fix-vm.yaml.j2"
+        template: "exercise7-vm.yaml.j2"
       register: breakvm
       until: breakvm is succeeded
       retries: 60
