@@ -3,6 +3,9 @@
   hosts: localhost
   gather_facts: true
 
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
   tasks:
     - name: Creating the exercise7 virtual machine
       kubernetes.core.k8s:
