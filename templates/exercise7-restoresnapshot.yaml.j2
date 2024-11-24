@@ -2,6 +2,7 @@
  kind: VirtualMachineRestore
  metadata:
    name: restore-exercise7-snapshot
+   namespace: "namespace-{{ user }}"
  spec:
    target:
      apiGroup: kubevirt.io
