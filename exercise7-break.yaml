@@ -47,5 +47,5 @@
     - name: Create exercise7-restoresnapshot.yaml script
       ansible.builtin.template:
         src: 'exercise7-restoresnapshot.yaml.j2'
-        dest: '/home/{{ user }}/configure-tmux-users.sh'
+        dest: '/home/{{ user }}/exercise7-restoresnapshot.yaml'
         mode: '0644'
