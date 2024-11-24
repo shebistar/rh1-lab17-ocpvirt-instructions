@@ -296,7 +296,7 @@
             name: view-server-version-binding
           subjects:
             - kind: User
-              name: '{{ user }}'
+              name: 'user{{ item | int }}'
               apiGroup: rbac.authorization.k8s.io
           roleRef:
             kind: ClusterRole
