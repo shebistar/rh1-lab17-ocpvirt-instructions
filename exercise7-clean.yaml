@@ -25,3 +25,8 @@
       retries: "60"
       delay: "2"
       until: cleanvm.resources | length == 0
+
+    - name: Remove exercise7-restoresnapshot.yaml script
+      ansible.builtin.file:
+        path: '/home/{{ user }}/exercise7-restoresnapshot.yaml'
+        state: absent
