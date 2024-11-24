@@ -30,11 +30,21 @@
             running: false
       register: stop_vm
 
+    # - name: Wait for VirtualMachine to stop
+    #   when: stop_vm is defined
+    #   ansible.builtin.wait_for:
+    #     timeout: 60
+    #   delay: 10
+
     - name: Wait for VirtualMachine to stop
-      when: stop_vm is defined
-      ansible.builtin.wait_for:
-        timeout: 60
-      delay: 10
+      kubernetes.core.k8s_info:
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise6"
+      register: exercise6vm
+      retries: "60"
+      delay: "2"
+      until: exercise6vm.resources | length == 0
 
     - name: Breaking the exercise6
       kubernetes.core.k8s:
@@ -45,3 +55,16 @@
       retries: 60
       delay: 10
       failed_when: breakvm is failed or breakvm.failed
+
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise6"
+      register: exercise6info
+      until: "exercise6info.resources | length > 0 and exercise6info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise6info.resources | length == 0
+
