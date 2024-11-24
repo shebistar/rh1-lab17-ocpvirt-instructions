@@ -1,0 +1,73 @@
+- name: Fixing the exercise7
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Check if exercise7 VM exists
+      kubernetes.core.k8s_info:
+        namespace: "namespace-{{ user }}"
+        kind: VirtualMachine
+        name: exercise7
+      register: ex1vm
+      failed_when: false
+
+    - name: Stop VM exercise7 if it exists
+      kubernetes.core.k8s:
+        namespace: "namespace-{{ user }}"
+        kind: VirtualMachine
+        name: exercise7
+        state: present
+        definition:
+          spec:
+            running: false
+      register: stopvm
+      until: stopvm is succeeded
+      retries: 60
+      delay: 10
+      when: ex1vm.resources | length > 0
+
+    - name: Restore the snapshot
+      kubernetes.core.k8s:
+        kind: VirtualMachineRestore
+        namespace: 'namespace-{{ user }}'
+        definition:
+          apiVersion: snapshot.kubevirt.io/v1alpha1
+          kind: VirtualMachineRestore
+          metadata:
+            name: restore-exercise7-snapshot
+          spec:
+            target:
+              apiGroup: kubevirt.io
+              kind: VirtualMachine
+              name: exercise7
+            virtualMachineSnapshotName: exercise7-snapshot
+
+    - name: Set VM to start state
+      kubernetes.core.k8s:
+        namespace: "namespace-{{ user }}"
+        kind: VirtualMachine
+        name: exercise7
+        state: present
+        definition:
+          spec:
+            running: true
+      register: startvm
+      until: startvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: startvm is failed or startvm.failed
+
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise7"
+      register: exercise7info
+      until: "exercise7info.resources | length > 0 and exercise7info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise7info.resources | length == 0
