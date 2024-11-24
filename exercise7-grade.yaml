@@ -11,7 +11,6 @@
         kind: VirtualMachineRestore
         api_version: snapshot.kubevirt.io/v1alpha1
         namespace: 'namespace-{{ user }}'
-        name: restore-exercise7-snapshot
       register: vm_restore_info
 
     - name: Check if snapshot has not been restored
