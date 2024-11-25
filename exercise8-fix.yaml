@@ -1,0 +1,16 @@
+- name: Fixing the exercise8
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Updating the idrsa secret
+      ansible.builtin.command:
+        cmd: virtctl credentials add-ssh-key -f /home/{{ user }}/.ssh/id_rsa --user lab-user --force exercise8
+
+    - name: Testing the ssh access
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise8
+      register: testssh

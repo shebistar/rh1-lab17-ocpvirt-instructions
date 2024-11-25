@@ -1,0 +1,12 @@
+- name: Grading the exercise8
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Testing the ssh access
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise8
+      register: testssh
