@@ -9,4 +9,11 @@
     - name: Testing the ssh access
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise8
+      ignore_errors: true
+      no_log: true
       register: testssh
+
+    - name: Check if snapshot has not been restored
+      ansible.builtin.fail:
+        msg: "Ooops, SSH is not working"
+      when: testssh.rc != 0
