@@ -13,4 +13,8 @@
     - name: Testing the ssh access
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise8
+      no_log: true
       register: testssh
+      until: testssh.rc == 0
+      retries: 60
+      delay: 10
