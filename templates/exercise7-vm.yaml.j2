@@ -36,8 +36,6 @@ spec:
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
-      nodeSelector:
-        "{{ user }}": "true"
       architecture: amd64
       domain:
         cpu:
