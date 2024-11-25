@@ -317,7 +317,7 @@
         owner: 'user{{ item }}'
         group: 'user{{ item }}'
         mode: '0700'
-      with_sequence: start=1 end=5
+      with_sequence: start=1 end={{ num_users }}
       become: true
       become_method: ansible.builtin.sudo
 
@@ -331,7 +331,7 @@
         owner: 'user{{ item }}'
         group: 'user{{ item }}'
       register: ssh_key_result
-      with_sequence: start=1 end=5
+      with_sequence: start=1 end={{ num_users }}
       become: true
       become_method: ansible.builtin.sudo
 
