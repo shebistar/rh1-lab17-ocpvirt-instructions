@@ -34,7 +34,7 @@
     }
 
 
-    if [ "$#" -ne 2 ] || ! [[ "$2" =~ ^(exercise1|exercise2|exercise3|exercise4|exercise5|exercise6|exercise7)$ ]]; then
+    if [ "$#" -ne 2 ] || ! [[ "$2" =~ ^(exercise1|exercise2|exercise3|exercise4|exercise5|exercise6|exercise7|exercise8)$ ]]; then
       echo "Usage: $0 {break|fix|grade|clean} <exercise>"
       exit 2
     fi
