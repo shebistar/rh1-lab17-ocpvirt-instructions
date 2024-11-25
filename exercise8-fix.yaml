@@ -6,6 +6,16 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
+    - name: Create SSH config file with StrictHostKeyChecking no
+      ansible.builtin.copy:
+        dest: '/home/{{ user }}/.ssh/config'
+        content: |
+          Host *
+            StrictHostKeyChecking no
+        owner: '{{ user }}'
+        group: '{{ user }}'
+        mode: '0600'
+
     - name: Updating the idrsa secret
       ansible.builtin.command:
         cmd: virtctl credentials add-ssh-key -f /home/{{ user }}/.ssh/id_rsa --user lab-user --force exercise8
