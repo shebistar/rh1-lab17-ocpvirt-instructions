@@ -8,9 +8,9 @@
   tasks:
     - name: Updating the idrsa secret
       ansible.builtin.command:
-        cmd: virtctl credentials add-ssh-key -f /home/{{ user }}/.ssh/id_rsa --user lab-user --force exercise8
+        cmd: virtctl credentials add-ssh-key -f /home/{{ user }}/.ssh/id_rsa.pub --user lab-user --force exercise8
 
-    - name: Testing the ssh access
+    - name: Wait the ssh access on exercise8 vm
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise8
       no_log: true
