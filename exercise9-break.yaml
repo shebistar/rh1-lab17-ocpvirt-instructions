@@ -25,7 +25,7 @@
 
     - name: Store base64 encoded content in a variable
       ansible.builtin.set_fact:
-        encodedsshpubkey: "{{ idrsapub.content | b64decode }}"
+        encodedsshpubkey: "{{ idrsapub.content | trim | b64encode }}"
 
     - name: Create the idrsa secret
       kubernetes.core.k8s:
