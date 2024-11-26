@@ -11,6 +11,7 @@ metadata:
     vm.kubevirt.io/template.revision: '1'
     vm.kubevirt.io/template.version: v0.29.2
 spec:
+  runStrategy: Always
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
       kind: DataVolume
@@ -26,7 +27,6 @@ spec:
           resources:
             requests:
               storage: 30Gi
-  running: true
   template:
     metadata:
       annotations:
@@ -39,7 +39,6 @@ spec:
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
-      runStrategy: Always
       accessCredentials:
         - sshPublicKey:
             propagationMethod:
