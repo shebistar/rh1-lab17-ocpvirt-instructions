@@ -21,5 +21,7 @@
 
     - name: Print if runStrategy is not set to Manual
       ansible.builtin.assert:
+        that:
+          -   exercise9vm.resources[0].spec.runStrategy == 'Manual'
         msg: "The runStrategy is set correctly and now the user can shut down their VM via Operating System!"
-      when: exercise9vm.resources[0].spec.runStrategy == 'Manual'
+
