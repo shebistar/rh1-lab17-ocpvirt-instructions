@@ -1,0 +1,20 @@
+- name: Grading the exercise9
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Get exercise9 Virtual Machine
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachine
+        name: exercise9
+        namespace: namespace-{{ user }}
+      register: exercise9vm
+
+    - name: Fail if runStrategy is not set to Manual
+      fail:
+        msg: "The runStrategy is not set correctly. It should be either 'Manual'."
+      when: exercise9vm.resources[0].spec.runStrategy != 'Manual'
