@@ -26,16 +26,13 @@
       delay: "2"
       until: cleanvm.resources | length == 0
 
-    - name: Removing the idrsa secret
+    - name: Removing the idrsa-exercise9 secret
       kubernetes.core.k8s:
         state: absent
         kind: Secret
         name: idrsa-exercise9
       register: idrsa
-      until: idrsa.status == "Success" or idrsa.status == "NotFound"
+      until: idrsa is succeeded
       retries: 60
       delay: 10
-      failed_when:
-        - idrsa.status == "Failure"
-        - idrsa.failed is defined and idrsa.failed
-
+      failed_when: idrsa is failed or idrsa.failed
