@@ -15,6 +15,11 @@
       register: exercise9vm
 
     - name: Fail if runStrategy is not set to Manual
-      fail:
+      ansible.builtin.fail:
         msg: "The runStrategy is not set correctly. It should be either 'Manual'."
+      when: exercise9vm.resources[0].spec.runStrategy != 'Manual'
+
+    - name: Print if runStrategy is not set to Manual
+      ansible.builtin.fail:
+        msg: "The runStrategy is set correctly and now the user can shut down their VM via Operating System!"
       when: exercise9vm.resources[0].spec.runStrategy != 'Manual'
