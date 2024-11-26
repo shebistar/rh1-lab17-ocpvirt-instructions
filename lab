@@ -39,6 +39,11 @@
       exit 2
     fi
 
+    if [ "$(whoami)" = "lab-user" ]; then
+      echo "You must run this playbook as 'userX' user"
+      exit 1
+    fi
+
     user=$(oc whoami 2>/dev/null)
     if [ -z "$user" ]; then
       echo "You must connect to OpenShift before running lab"
