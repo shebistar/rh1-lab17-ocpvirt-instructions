@@ -16,7 +16,7 @@
         namespace: "{{ namespace }}"
       register: vm_info
 
-    - name: If exists and running stop VirtualMachine 
+    - name: If exists and running then stop VirtualMachine 
       when: vm_info.resources | length > 0 and vm_info.resources[0].spec.running == true
       kubernetes.core.k8s:
         state: present
@@ -30,11 +30,23 @@
             running: false
       register: stop_vm
 
-    - name: Wait for VirtualMachine to stop
+    - name: Wait for VirtualMachine to stop if exists
       when: stop_vm is defined
       ansible.builtin.wait_for:
         timeout: 60
       delay: 10
+
+    # - name: Wait for VM to be stopped
+    #   kubernetes.core.k8s_info:
+    #     api_version: kubevirt.io/v1
+    #     kind: VirtualMachineInstance
+    #     namespace: "namespace-{{ user }}"
+    #     name: "{{ vm_name }}"
+    #   register: exercise6info
+    #   until: "exercise6info.resources | length == 0 and exercise6info.resources[0].status.phase == 'Stopped'"
+    #   retries: 60
+    #   delay: 10
+    #   failed_when: exercise6info.resources | length > 0
 
     - name: Breaking the exercise6
       kubernetes.core.k8s:
