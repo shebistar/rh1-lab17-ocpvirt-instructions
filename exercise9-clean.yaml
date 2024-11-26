@@ -31,6 +31,7 @@
         state: absent
         kind: Secret
         name: idrsa-exercise9
+        namespace: "namespace-{{ user }}"
       register: idrsa
       until: idrsa is succeeded
       retries: 60
