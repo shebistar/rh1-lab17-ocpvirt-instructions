@@ -31,9 +31,11 @@
         state: absent
         kind: Secret
         name: idrsa-exercise9
-      register: idrsa-exercise9
-      until: idrsa-exercise9 is succeeded
+      register: idrsa
+      until: idrsa.status == "Success" or idrsa.status == "NotFound"
       retries: 60
       delay: 10
-      failed_when: idrsa-exercise9 is failed or idrsa-exercise9.failed
+      failed_when:
+        - idrsa.status == "Failure"
+        - idrsa.failed is defined and idrsa.failed
 
