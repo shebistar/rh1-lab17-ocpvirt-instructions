@@ -12,7 +12,7 @@
         kind: VirtualMachine
         name: exercise9
         namespace: "namespace-{{ user }}"
-        patch:
+        definition:
           spec:
             runStrategy: Manual
         state: patched
