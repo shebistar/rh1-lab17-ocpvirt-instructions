@@ -20,7 +20,7 @@
 
     - name: Read the content of the file
       ansible.builtin.slurp:
-        src: /tmp/'/home/{{ user }}/.ssh/id_rsa.pub'
+        src: '/home/{{ user }}/.ssh/id_rsa.pub'
       register: idrsapub
 
     - name: Store base64 encoded content in a variable
