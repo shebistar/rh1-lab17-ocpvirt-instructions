@@ -2,6 +2,8 @@
 
 TMUX_GIT_DIR="/home/lab-user/tmux"
 
+sudo cp $TMUX_GIT_DIR/.tmux.conf /etc/tmux.conf
+
 for user in $(seq 1 {{ num_users }})
 do
   echo "Configuring .bashrc, vimrc and .tmux.conf files"
