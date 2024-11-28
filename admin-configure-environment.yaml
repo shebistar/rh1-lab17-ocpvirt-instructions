@@ -19,21 +19,6 @@
     #     msg: "You are logged in but you are not 'admin' user. Please log in with user 'admin'"
     #   when: oc_whoami_result.stdout != "admin" or oc_whoami_result.stdout != "system:admin"
 
-    # - name: Removing OADP projects
-    #   kubernetes.core.k8s:
-    #     state: absent
-    #     definition:
-    #       apiVersion: v1
-    #       kind: Namespace
-    #       metadata:
-    #         name: "oadp-user{{ item }}"
-    #   register: removeoadp
-    #   until: removeoadp is succeeded
-    #   retries: 60
-    #   delay: 10
-    #   failed_when: removeoadp is failed or removeoadp.failed
-    #   with_sequence: start=1 end={{ num_users }}
-
     - name: Ensure users namespace exists
       kubernetes.core.k8s:
         state: present
@@ -422,3 +407,59 @@
     #                 state: present
     #   ignore_errors: true
 
+    - name: Remove argocd CRD on openshift-gitops
+      kubernetes.core.k8s:
+        kind: ArgoCD
+        api_version: argoproj.io/v1alpha1
+        namespace: openshift-gitops
+        name: openshift-gitops
+        state: absent
+      register: removeargo
+      ignore_errors: true
+
+    - name: Get all applications on openshift-gitops
+      kubernetes.core.k8s_info:
+        kind: Application
+        api_version: argoproj.io/v1alpha1
+        namespace: openshift-gitops
+      register: application_crds
+      ignore_errors: true
+
+    - name: Remove applications
+      kubernetes.core.k8s:
+        kind: Application
+        api_version: argoproj.io/v1alpha1
+        namespace: openshift-gitops
+        name: "{{ item.metadata.name }}"
+        state: absent
+      loop: "{{ application_crds.resources }}"
+      ignore_errors: true
+
+    - name: Remover finalizer of the applications
+      kubernetes.core.k8s:
+        kind: Application
+        api_version: argoproj.io/v1alpha1
+        namespace: openshift-gitops
+        definition:
+          metadata:
+            name: "{{ item.metadata.name }}"
+            finalizers: "{{ item.metadata.finalizers | difference(['resources-finalizer.argocd.argoproj.io']) }}"
+      loop: "{{ application_crds.resources }}"
+      when: "'resources-finalizer.argocd.argoproj.io' in item.metadata.finalizers"
+      ignore_errors: true
+
+    - name: Removing OADP projects
+      kubernetes.core.k8s:
+        state: absent
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "oadp-user{{ item }}"
+      register: removeoadp
+      until: removeoadp is succeeded
+      retries: 60
+      delay: 10
+      failed_when: removeoadp is failed or removeoadp.failed
+      with_sequence: start=1 end={{ num_users }}
+      ignore_errors: true
