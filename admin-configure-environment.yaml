@@ -19,20 +19,20 @@
     #     msg: "You are logged in but you are not 'admin' user. Please log in with user 'admin'"
     #   when: oc_whoami_result.stdout != "admin" or oc_whoami_result.stdout != "system:admin"
 
-    - name: Removing OADP projects
-      kubernetes.core.k8s:
-        state: absent
-        definition:
-          apiVersion: v1
-          kind: Namespace
-          metadata:
-            name: "oadp-user{{ item }}"
-      register: removeoadp
-      until: removeoadp is succeeded
-      retries: 60
-      delay: 10
-      failed_when: removeoadp is failed or removeoadp.failed
-      with_sequence: start=1 end={{ num_users }}
+    # - name: Removing OADP projects
+    #   kubernetes.core.k8s:
+    #     state: absent
+    #     definition:
+    #       apiVersion: v1
+    #       kind: Namespace
+    #       metadata:
+    #         name: "oadp-user{{ item }}"
+    #   register: removeoadp
+    #   until: removeoadp is succeeded
+    #   retries: 60
+    #   delay: 10
+    #   failed_when: removeoadp is failed or removeoadp.failed
+    #   with_sequence: start=1 end={{ num_users }}
 
     - name: Ensure users namespace exists
       kubernetes.core.k8s:
@@ -76,17 +76,6 @@
       delay: 10
       failed_when: rbacusers is failed or rbacusers.failed
       with_sequence: start=1 end={{ num_users }}
-
-    # - name: Creating bastion vms on users namespace
-    #   kubernetes.core.k8s:
-    #     state: present
-    #     template: "bastion.yaml.j2"
-    #   with_sequence: start=1 end={{ num_users }}
-    #   register: bastion
-    #   until: bastion is succeeded
-    #   retries: 60
-    #   delay: 10
-    #   failed_when: bastion is failed or bastion.failed
 
     - name: Moving openshift-monitoring pods to run on control-planes
       kubernetes.core.k8s:
