@@ -29,6 +29,24 @@
       delay: 10
       when: ex2vm.resources | length > 0
 
+    - name: Removing exercise2 virtual machine
+      kubernetes.core.k8s:
+        namespace: "namespace-{{ user }}"
+        kind: VirtualMachine
+        name: exercise2
+        state: absent
+      when: ex2vm.resources | length > 0
+
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise2"
+      register: cleanvm
+      retries: "60"
+      delay: "2"
+      until: cleanvm.resources | length == 0
+
     - name: Fixing VM
       kubernetes.core.k8s:
         state: present
