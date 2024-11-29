@@ -463,3 +463,21 @@
       failed_when: removeoadp is failed or removeoadp.failed
       with_sequence: start=1 end={{ num_users }}
       ignore_errors: true
+
+    - name: Remover a assinatura do operador OpenShift GitOps
+      kubernetes.core.k8s:
+        api_version: operators.coreos.com/v1alpha1
+        namespace: openshift-operators
+        kind: Subscription
+        name: openshift-gitops-operator
+        state: absent
+      ignore_errors: true
+
+    - name: Remover o ClusterServiceVersion associado ao operador OpenShift GitOps
+      kubernetes.core.k8s:
+        api_version: operators.coreos.com/v1alpha1
+        namespace: openshift-operators
+        kind: clusterserviceversion
+        name: openshift-gitops-operator.v1.13.3
+        state: absent
+      ignore_errors: true
