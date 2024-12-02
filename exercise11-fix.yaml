@@ -104,7 +104,7 @@
     - name: Creating VM B
       kubernetes.core.k8s:
         state: present
-        template: "exercise11-create-vm-b.yaml.j2"
+        template: "exercise11-create-vm-b-fix.yaml.j2"
       register: createvmb
       until: createvmb is succeeded
       retries: 60

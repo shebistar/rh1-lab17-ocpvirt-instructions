@@ -61,6 +61,7 @@
       retries: 60
       delay: 10
       failed_when: createvmb is failed or createvmb.failed
+      
 
     - name: Wait for VM A to be running
       kubernetes.core.k8s_info:
