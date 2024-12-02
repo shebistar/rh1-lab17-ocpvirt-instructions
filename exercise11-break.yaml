@@ -56,7 +56,7 @@
         api_version: kubevirt.io/v1
         kind: VirtualMachineInstance
         namespace: "namespace-{{ user }}"
-        name: " exercise11-a"
+        name: "exercise11-a"
       register: exercise11ainfo
       until: " exercise11ainfo.resources | length > 0 and exercise11ainfo.resources[0].status.phase == 'Running'"
       retries: 60
@@ -68,7 +68,7 @@
         api_version: kubevirt.io/v1
         kind: VirtualMachineInstance
         namespace: "namespace-{{ user }}"
-        name: " exercise11-b"
+        name: "exercise11-b"
       register: exercise11binfo
       until: " exercise11binfo.resources | length > 0 and exercise11binfo.resources[0].status.phase == 'Running'"
       retries: 60
