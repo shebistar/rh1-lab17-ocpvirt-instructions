@@ -6,6 +6,7 @@ metadata:
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
+    kubevirt.io/dynamic-credentials-support: 'true'
     app: exercise11-b
 spec:
   dataVolumeTemplates:
