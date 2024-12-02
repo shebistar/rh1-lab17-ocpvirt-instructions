@@ -35,6 +35,15 @@ spec:
         kubevirt.io/domain: exercise11-a
         kubevirt.io/size: small
     spec:
+      accessCredentials:
+        - sshPublicKey:
+            propagationMethod:
+              qemuGuestAgent:
+                users:
+                  - lab-user
+            source:
+              secret:
+                secretName: idrsa
       nodeSelector:
         "{{ user }}": "true"
       architecture: amd64
