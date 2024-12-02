@@ -98,6 +98,8 @@ spec:
               user: "lab-user"
               password: redhat1
               chpasswd: { expire: False }
+              runcmd:
+              - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
             networkData: |
               version: 2
               ethernets:
