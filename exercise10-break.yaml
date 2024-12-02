@@ -15,7 +15,7 @@
       retries: 60
       delay: 10
       failed_when: createnad is failed or createnad.failed
-    
+
     - name: Exercise10 - Creating VM
       kubernetes.core.k8s:
         state: present
