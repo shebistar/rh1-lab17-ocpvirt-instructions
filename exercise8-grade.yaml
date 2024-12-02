@@ -17,3 +17,8 @@
       ansible.builtin.fail:
         msg: "Ooops, SSH is not working"
       when: testssh.rc != 0
+
+    - name: Check the exercise8 status
+      ansible.builtin.debug:
+        msg: "Congrats, the user can now have access to the VM using SSH again. The dev team will be more careful with the SSH keys next time!"
+      when: testssh.rc == 0
