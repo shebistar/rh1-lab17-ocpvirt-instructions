@@ -1,12 +1,12 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name:  exercise11-b
+  name:   exercise11-b
   namespace: "namespace-{{ user }}"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
-    app:  exercise11-b
+    app:   exercise11-b
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
@@ -34,7 +34,6 @@ spec:
       labels:
         kubevirt.io/domain:  exercise11-b
         kubevirt.io/size: small
-        network.kubevirt.io/headlessService: headless
     spec:
       architecture: amd64
       domain:
@@ -51,7 +50,7 @@ spec:
                 bus: virtio
               name: cloudinitdisk
           interfaces:
-            - bridge: {}
+              masquerade: {}
               model: virtio
               name: default
             - bridge: {}
@@ -71,9 +70,11 @@ spec:
           guest: 4Gi
         resources: {}
       networks:
+        - name: default
+          pod: {}
         - multus:
             networkName: exercise11-nad
-          name: default
+          name: exercise11-nad
       terminationGracePeriodSeconds: 180
       volumes:
         - dataVolume:
@@ -92,5 +93,5 @@ spec:
                     name: eth1
                     subnets:
                       - type: static
-                        address: 192.168.0.11/32
+                        address: 192.168.0.10/24
           name: cloudinitdisk
