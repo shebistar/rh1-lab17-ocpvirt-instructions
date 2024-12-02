@@ -1,0 +1,27 @@
+- name: Preparing exercise10
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Exercise10 - Creating NAD
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise10-create-nad.yaml.j2"
+      register: createnad
+      until: createnad is succeeded
+      retries: 60
+      delay: 10
+      failed_when: createnad is failed or createnad.failed
+    
+    - name: Exercise10 - Creating VM
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise10-create-vm.yaml.j2"
+      register: createvm
+      until: createvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: createvm is failed or createvm.failed

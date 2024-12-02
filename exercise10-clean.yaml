@@ -1,0 +1,27 @@
+- name: Cleaning the exercise10
+  hosts: localhost
+  gather_facts: true
+
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+
+  tasks:
+    - name: Exercise10 - Removing VM
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise10-create-vm.yaml.j2"
+      register: deletevm
+      until: deletevm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: deletevm is failed or deletevm.failed
+
+    - name: Exercise10 - Removing NAD
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise10-create-nad.yaml.j2"
+      register: deletenad
+      until: deletenad is succeeded
+      retries: 60
+      delay: 10
+      failed_when: deletenad is failed or deletenad.failed
