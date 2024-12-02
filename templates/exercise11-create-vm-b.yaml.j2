@@ -35,6 +35,8 @@ spec:
         kubevirt.io/domain:  exercise11-b
         kubevirt.io/size: small
     spec:
+      nodeSelector:
+        "{{ user }}": "true"
       architecture: amd64
       domain:
         cpu:
