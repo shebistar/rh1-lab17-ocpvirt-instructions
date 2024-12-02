@@ -10,7 +10,7 @@
       kubernetes.core.k8s:
         state: absent
         template: "exercise11-create-vm-a.yaml.j2"
-      register: deletevmb
+      register: deletevma
       until: deletevma is succeeded
       retries: 60
       delay: 10
