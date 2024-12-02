@@ -1,13 +1,12 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name:  exercise10
+  name: exercise10
   namespace: "namespace-{{ user }}"
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
-    kubevirt.io/dynamic-credentials-support: 'true'
-    app:  exercise10
+    app: exercise10
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
@@ -35,9 +34,8 @@ spec:
       labels:
         kubevirt.io/domain: exercise10
         kubevirt.io/size: small
+        network.kubevirt.io/headlessService: headless
     spec:
-      nodeSelector:
-        "{{ user }}": "true"
       architecture: amd64
       domain:
         cpu:
@@ -53,11 +51,9 @@ spec:
                 bus: virtio
               name: cloudinitdisk
           interfaces:
-            - model: virtio
-              name: default
             - bridge: {}
               model: virtio
-              name: exercise10-nad
+              name: default
           rng: {}
         features:
           acpi: {}
@@ -72,11 +68,9 @@ spec:
           guest: 4Gi
         resources: {}
       networks:
-        - name: default
-          pod: {}
         - multus:
             networkName: exercise10-nad
-          name: exercise10-nad
+          name: default
       terminationGracePeriodSeconds: 180
       volumes:
         - dataVolume:
@@ -88,12 +82,4 @@ spec:
               user: "lab-user"
               password: redhat1
               chpasswd: { expire: False }
-              runcmd:
-              - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
-            networkData: |
-              version: 2
-              ethernets:
-                eth1: 
-                  addresses:
-                  - 192.168.0.10/24
           name: cloudinitdisk
