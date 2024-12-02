@@ -49,7 +49,7 @@
     - name: Removing NAD
       kubernetes.core.k8s:
         state: absent
-        template: "exercise10-create-nad.yaml.j2"
+        template: "exercise11-create-nad.yaml.j2"
       register: deletenad
       until: deletenad is succeeded
       retries: 60
