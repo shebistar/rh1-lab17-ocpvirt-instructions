@@ -42,7 +42,7 @@
         namespace: "namespace-{{ user }}"
         name: "exercise6"
       register: exercise6vm
-      retries: "60"
+      retries: 60
       delay: "10"
       until: exercise6vm.resources | length == 0
 

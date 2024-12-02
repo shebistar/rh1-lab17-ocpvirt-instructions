@@ -22,6 +22,6 @@
         namespace: "namespace-{{ user }}"
         name: "exercise2"
       register: cleanvm
-      retries: "60"
-      delay: "2"
+      retries: 60
+      delay: 2
       until: cleanvm.resources | length == 0

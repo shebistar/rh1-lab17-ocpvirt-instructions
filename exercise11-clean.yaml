@@ -26,7 +26,27 @@
       delay: 10
       failed_when: deletevma is failed or deletevma.failed
 
-    - name: Exercise10 - Removing NAD
+    - name: Wait for the Virtual Machine A to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise11-a"
+      register: cleanvma
+      retries: 60
+      delay: 2
+      until: cleanvma.resources | length == 0
+
+    - name: Wait for the Virtual Machine B to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise11-b"
+      register: cleanvma
+      retries: 60
+      delay: 2
+      until: cleanvmb.resources | length == 0
+
+    - name: Removing NAD
       kubernetes.core.k8s:
         state: absent
         template: "exercise10-create-nad.yaml.j2"

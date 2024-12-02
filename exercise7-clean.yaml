@@ -22,8 +22,8 @@
         namespace: "namespace-{{ user }}"
         name: "exercise7"
       register: cleanvm
-      retries: "60"
-      delay: "2"
+      retries: 60
+      delay: 2
       until: cleanvm.resources | length == 0
 
     - name: Remove exercise7-restoresnapshot.yaml script
