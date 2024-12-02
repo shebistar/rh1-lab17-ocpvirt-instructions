@@ -55,3 +55,13 @@
       retries: 60
       delay: 10
       failed_when: deletenad is failed or deletenad.failed
+
+    - name: Removing the idrsa secret
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise8-secret.yaml.j2"
+      register: secretidrsa
+      until: secretidrsa is succeeded
+      retries: 60
+      delay: 10
+      failed_when: secretidrsa is failed or secretidrsa.failed
