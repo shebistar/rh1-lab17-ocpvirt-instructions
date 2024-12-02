@@ -17,3 +17,8 @@
       ansible.builtin.fail:
         msg: "Ooops, The exercise11-b virtual machine is not reachable."
       when: testping.rc != 0
+
+    - name: Check the exercise11-b status
+      ansible.builtin.debug:
+        msg: "Nice job, all virtual machines are working as expected."
+      when: testping.rc == 0
