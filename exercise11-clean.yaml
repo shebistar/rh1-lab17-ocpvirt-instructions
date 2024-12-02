@@ -41,7 +41,7 @@
         kind: VirtualMachine
         namespace: "namespace-{{ user }}"
         name: "exercise11-b"
-      register: cleanvma
+      register: cleanvmb
       retries: 60
       delay: 2
       until: cleanvmb.resources | length == 0
