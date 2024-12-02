@@ -20,5 +20,5 @@
 
     - name: Check the exercise11-b status
       ansible.builtin.debug:
-        msg: "Nice job, all virtual machines are working as expected."
+        msg: "Nice job, the access to all virtual machines are working as expected."
       when: testping.rc == 0
