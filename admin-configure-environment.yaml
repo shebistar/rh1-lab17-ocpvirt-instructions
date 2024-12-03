@@ -481,3 +481,15 @@
         name: openshift-gitops-operator.v1.13.3
         state: absent
       ignore_errors: true
+
+    - name: New .check-lab.sh file on users dir
+      ansible.builtin.template:
+        src: check-lab.sh.j2
+        dest: "/home/user{{ item }}/.check-lab.sh"
+        mode: '0755'
+        owner: 'user{{ item }}'
+        group: 'user{{ item }}'
+      become: true
+      become_method: sudo
+      with_sequence: start=1 end={{ num_users }}
+      ignore_errors: true
