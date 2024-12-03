@@ -5,7 +5,7 @@ COLOR_RED="\033[0;31m"
 COLOR_RESET="\033[0m"
 
 # Captura o início do script
-script_start=$(date +%s.%N)
+script_start=$(date +%s)
 
 for ex in $(shuf -i 1-11)
 do
@@ -62,11 +62,12 @@ do
   fi  
 done
 
-script_end=$(date +%s.%N)
+script_end=$(date +%s)
 
-total_duration=$(echo "$script_end - $script_start" | bc)
-total_minutes=$(echo "$total_duration / 60" | bc)
-total_seconds=$(echo "$total_duration % 60" | bc)
+total_duration=$((script_end - script_start))
+total_minutes=$((total_duration / 60))
+total_seconds=$((total_duration % 60))
 
+# Exibe o tempo total formatado
 echo -e "${COLOR_GREEN}Script executed successfully in ${total_minutes}m ${total_seconds}s${COLOR_RESET}"
 logger -p local0.notice "Script executed successfully in ${total_minutes}m ${total_seconds}s"
