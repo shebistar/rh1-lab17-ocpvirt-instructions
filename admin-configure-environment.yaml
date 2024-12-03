@@ -484,9 +484,16 @@
 
     - name: New /usr/loca/bin/check-lab.sh file
       ansible.builtin.template:
-        src: check-lab.sh.j2
-        dest: "/usr/local/bin/check-lab.sh"
+        src: test-lab-performance.sh.j2
+        dest: "/usr/local/bin/test-lab-performance.sh.sh"
         mode: '0755'
       become: true
       become_method: sudo
+      ignore_errors: true
+
+    - name: New /home/lab-user/perf-test-tmux.yaml file
+      ansible.builtin.template:
+        src: perf-test-tmux.yaml.j2
+        dest: "/home/lab-user/perf-test-tmux.yaml"
+        mode: '0644'
       ignore_errors: true
