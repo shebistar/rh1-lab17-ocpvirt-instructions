@@ -502,6 +502,6 @@
 
     - name: Run /home/lab-user/generate-tmux-session.sh
       ansible.builtin.command:
-        cmd: /home/lab-user/generate-tmux-session.sh
+        cmd: bash /home/lab-user/generate-tmux-session.sh
       register: tmuxsessionfile
       ignore_errors: true

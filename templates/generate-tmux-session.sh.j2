@@ -21,7 +21,7 @@ user_count=1
 for window in $(seq 1 "$total_windows"); do
   echo "  - window_name: performancetest-$window" >> "$output_file"
   echo "    layout: tiled" >> "$output_file"
-  echo "    options:" >> "$output_file"
+  echo "    options_after:" >> "$output_file"
   echo "      synchronize-panes: true" >> "$output_file"
   echo "    panes:" >> "$output_file"
 
