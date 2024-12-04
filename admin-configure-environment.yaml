@@ -482,7 +482,7 @@
         state: absent
       ignore_errors: true
 
-    - name: New /usr/loca/bin/check-lab.sh file
+    - name: New /usr/loca/bin/test-lab-performance.sh file
       ansible.builtin.template:
         src: test-lab-performance.sh.j2
         dest: "/usr/local/bin/test-lab-performance.sh"
@@ -491,11 +491,17 @@
       become_method: sudo
       ignore_errors: true
 
-    - name: New /home/lab-user/perf-test-tmux.yaml file
+    - name: New /home/lab-user/generate-tmux-session.sh file
       ansible.builtin.template:
-        src: perf-test-tmux.yaml.j2
-        dest: "/home/lab-user/perf-test-tmux.yaml"
-        mode: '0644'
+        src: generate-tmux-session.sh.j2
+        dest: "/home/lab-user/generate-tmux-session.sh"
+        mode: '0755'
         owner: "lab-user"
         group: "lab-user"
+      ignore_errors: true
+
+    - name: Run /home/lab-user/generate-tmux-session.sh
+      ansible.builtin.command:
+        cmd: /home/lab-user/generate-tmux-session.sh
+      register: tmuxsessionfile
       ignore_errors: true
