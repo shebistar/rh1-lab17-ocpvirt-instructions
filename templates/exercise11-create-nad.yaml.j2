@@ -2,6 +2,6 @@ apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
 metadata:
   name: exercise11-nad
-  namespace: namespace-{{ user }}
+  namespace: 'namespace-{{ user }}'
 spec:
-  config: '{"name":"exercise11-nad","type":"bridge","cniVersion":"0.3.1","bridge":"br11","macspoofchk":true,"ipam":{},"preserveDefaultVlan":false}'
+  config: '{ "cniVersion": "0.4.0", "name": "exercise11-nad", "netAttachDefName": "namespace-{{ user }}/exercise11-nad", "topology": "layer2", "type": "ovn-k8s-cni-overlay" }'
