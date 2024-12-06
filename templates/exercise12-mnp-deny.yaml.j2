@@ -3,7 +3,7 @@ kind: MultiNetworkPolicy
 metadata:
   name: deny-by-default
   annotations:
-    k8s.v1.cni.cncf.io/policy-for: 'namespace-{{ user }}/exercise12-nad'
+    k8s.v1.cni.cncf.io/policy-for: namespace-{{ user }}/exercise12-nad
 spec:
   podSelector: {}
   policyTypes:

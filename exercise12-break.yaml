@@ -86,15 +86,15 @@
       delay: 10
       failed_when: exercise12binfo.resources | length == 0
 
-    - name: Breaking exercise part 1 
+    - name: Breaking exercise part 1
       kubernetes.core.k8s:
         state: present
         template: "exercise12-mnp-deny.yaml.j2"
-      register: mnpallow
-      until: mnpallow is succeeded
+      register: mnpdeny
+      until: mnpdeny is succeeded
       retries: 60
       delay: 10
-      failed_when: mnpallow is failed or mnpallow.failed
+      failed_when: mnpdeny is failed or mnpdeny.failed
 
     - name: Breaking exercise part 2
       kubernetes.core.k8s:
