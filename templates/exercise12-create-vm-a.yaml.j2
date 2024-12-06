@@ -103,4 +103,6 @@ spec:
               password: redhat1
               chpasswd:
                 expire: false
+              runcmd:
+              - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
           name: cloudinitdisk

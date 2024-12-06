@@ -110,6 +110,7 @@ spec:
                 - systemctl enable httpd
                 - systemctl start httpd
                 - echo "Hey Hey Hey, it's working!!" > /var/www/html/index.html
+                - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
 
               final_message: "HTTP server is configured, file downloaded and extracted!"
           name: cloudinitdisk
