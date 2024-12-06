@@ -20,7 +20,7 @@
     - name: Creating NAD
       kubernetes.core.k8s:
         state: present
-        template: "exercise10-create-nad.yaml.j2"
+        template: "exercise10-create-nad-fix.yaml.j2"
       register: createnad
       until: createnad is succeeded
       retries: 60
