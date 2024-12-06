@@ -4,6 +4,7 @@ metadata:
   annotations:
     k8s.v1.cni.cncf.io/policy-for: namespace-{{ user }}/exercise12-nad
   name: allow-80-on-exercise12
+  namespace: 'namespace-{{ user }}'
 spec:
   podSelector:
     matchLabels:
