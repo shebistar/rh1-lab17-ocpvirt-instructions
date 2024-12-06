@@ -364,9 +364,9 @@
       when:
         - nmstate_cfg | default(false) | bool
 
-    - name: Pause for 20 seconds to wait for pods
+    - name: Pause for 60 seconds to wait for pods
       ansible.builtin.pause:
-        seconds: 20
+        seconds: 60
       when:
         - nmstate_cfg | default(false) | bool
 
@@ -524,6 +524,6 @@
 
     - name: Enabling multi network policy
       ansible.builtin.command:
-        cmd: oc patch network cluster --type='merge' -p '{"spec":{"useMultiNetworkPolicy":true}}'
+        cmd: oc patch network.operator.openshift.io/cluster --type='merge' -p '{"spec":{"useMultiNetworkPolicy":true}}'
       register: enablemnp
       ignore_errors: true
