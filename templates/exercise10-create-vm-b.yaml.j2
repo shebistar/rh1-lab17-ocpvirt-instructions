@@ -7,7 +7,7 @@ metadata:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
     kubevirt.io/dynamic-credentials-support: 'true'
-    app: exercise10-b
+    app: exercise10
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
@@ -35,7 +35,18 @@ spec:
       labels:
         kubevirt.io/domain:  exercise10-b
         kubevirt.io/size: small
+        app: exercise10
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - exercise10
+            topologyKey: kubernetes.io/hostname
       accessCredentials:
         - sshPublicKey:
             propagationMethod:
