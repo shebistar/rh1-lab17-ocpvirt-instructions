@@ -32,7 +32,7 @@ clean() {
 }
 
 
-if [ "$#" -ne 2 ] || ! [[ "$2" =~ ^(exercise1|exercise2|exercise3|exercise4|exercise5|exercise6|exercise7|exercise8|exercise9|exercise10|exercise11)$ ]]; then
+if [ "$#" -ne 2 ] || ! [[ "$2" =~ ^(exercise1|exercise2|exercise3|exercise4|exercise5|exercise6|exercise7|exercise8|exercise9|exercise10|exercise11|exercise12)$ ]]; then
   echo "Usage: $0 {break|fix|grade|clean} <exercise>"
   exit 2
 fi

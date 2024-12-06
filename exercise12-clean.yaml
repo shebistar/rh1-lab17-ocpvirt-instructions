@@ -9,7 +9,7 @@
     - name: Removing VM A
       kubernetes.core.k8s:
         state: absent
-        template: "exercise11-create-vm-a.yaml.j2"
+        template: "exercise12-create-vm-a.yaml.j2"
       register: deletevma
       until: deletevma is succeeded
       retries: 60
@@ -19,7 +19,7 @@
     - name: Removing VM B
       kubernetes.core.k8s:
         state: absent
-        template: "exercise11-create-vm-b.yaml.j2"
+        template: "exercise12-create-vm-b.yaml.j2"
       register: deletevmb
       until: deletevmb is succeeded
       retries: 60
@@ -30,7 +30,7 @@
       kubernetes.core.k8s_info:
         kind: VirtualMachine
         namespace: "namespace-{{ user }}"
-        name: "exercise11-a"
+        name: "exercise12-a"
       register: cleanvma
       retries: 60
       delay: 2
@@ -40,7 +40,7 @@
       kubernetes.core.k8s_info:
         kind: VirtualMachine
         namespace: "namespace-{{ user }}"
-        name: "exercise11-b"
+        name: "exercise12-b"
       register: cleanvmb
       retries: 60
       delay: 2
@@ -49,7 +49,7 @@
     - name: Removing NAD
       kubernetes.core.k8s:
         state: absent
-        template: "exercise11-create-nad.yaml.j2"
+        template: "exercise12-create-nad.yaml.j2"
       register: deletenad
       until: deletenad is succeeded
       retries: 60
@@ -65,3 +65,23 @@
       retries: 60
       delay: 10
       failed_when: secretidrsa is failed or secretidrsa.failed
+
+    - name: Clean MNP deny
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise12-mnp-deny.yaml.j2"
+      register: mnpallow
+      until: mnpallow is succeeded
+      retries: 60
+      delay: 10
+      failed_when: mnpallow is failed or mnpallow.failed
+
+    - name: Clean MNP allow
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise12-mnp-allow.yaml.j2"
+      register: mnpallow
+      until: mnpallow is succeeded
+      retries: 60
+      delay: 10
+      failed_when: mnpallow is failed or mnpallow.failed
