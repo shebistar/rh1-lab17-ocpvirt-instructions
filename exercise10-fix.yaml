@@ -85,7 +85,7 @@
     - name: Creating NAD
       kubernetes.core.k8s:
         state: present
-        template: "exercise10-create-nad-fix.yaml.j2"
+        template: "exercise10-create-nad.yaml.j2"
       register: createnad
       until: createnad is succeeded
       retries: 60
@@ -110,7 +110,7 @@
     - name: Creating VM A
       kubernetes.core.k8s:
         state: present
-        template: "exercise10-create-vm-a.yaml.j2"
+        template: "exercise10-create-vm-a-fix.yaml.j2"
       register: createvma
       until: createvma is succeeded
       retries: 60
@@ -120,7 +120,7 @@
     - name: Creating VM B
       kubernetes.core.k8s:
         state: present
-        template: "exercise10-create-vm-b.yaml.j2"
+        template: "exercise10-create-vm-b-fix.yaml.j2"
       register: createvmb
       until: createvmb is succeeded
       retries: 60

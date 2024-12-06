@@ -527,3 +527,21 @@
         cmd: oc patch network.operator.openshift.io/cluster --type='merge' -p '{"spec":{"useMultiNetworkPolicy":true}}'
       register: enablemnp
       ignore_errors: true
+
+    - name: Configuring br-network net-attach on all users
+      kubernetes.core.k8s:
+       kind: NetworkAttachmentDefinition
+       definition:
+         apiVersion: k8s.cni.cncf.io/v1
+         kind: NetworkAttachmentDefinition
+         metadata:
+           name: br-ex-network
+           namespace: 'namespace-user{{ item }}'
+         spec:
+           config: '{"name":"br-ex-network","type":"ovn-k8s-cni-overlay","cniVersion":"0.3.1","topology":"layer2","netAttachDefName":"namespace-user{{ item }}/br-ex-network"}'
+       state: present
+      ignore_errors: true
+      when:
+        - nmstate_cfg | default(false) | bool
+      with_sequence: start=1 end={{ num_users }}
+
