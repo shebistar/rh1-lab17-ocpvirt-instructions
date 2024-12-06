@@ -6,17 +6,47 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Exercise10 - Stopping VM
+    - name: Removing VM A
       kubernetes.core.k8s:
         state: absent
-        template: "exercise10-create-vm.yaml.j2"
-      register: deletevm
-      until: deletevm is succeeded
+        template: "exercise10-create-vm-a.yaml.j2"
+      register: deletevma
+      until: deletevma is succeeded
       retries: 60
       delay: 10
-      failed_when: deletevm is failed or deletevm.failed
+      failed_when: deletevma is failed or deletevma.failed
 
-    - name: Exercise10 - Removing NAD
+    - name: Removing VM B
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise10-create-vm-b.yaml.j2"
+      register: deletevmb
+      until: deletevmb is succeeded
+      retries: 60
+      delay: 10
+      failed_when: deletevma is failed or deletevma.failed
+
+    - name: Wait for the Virtual Machine A to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise10-a"
+      register: cleanvma
+      retries: 60
+      delay: 2
+      until: cleanvma.resources | length == 0
+
+    - name: Wait for the Virtual Machine B to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise10-b"
+      register: cleanvmb
+      retries: 60
+      delay: 2
+      until: cleanvmb.resources | length == 0
+
+    - name: Removing NAD
       kubernetes.core.k8s:
         state: absent
         template: "exercise10-create-nad.yaml.j2"
@@ -26,20 +56,92 @@
       delay: 10
       failed_when: deletenad is failed or deletenad.failed
 
-    - name: Exercise10 - Wait for VM
-      pause:
-        seconds: 10
-
-    - name: Exercise10 - Starting VM
+    - name: Removing the idrsa secret
       kubernetes.core.k8s:
-        state: present
-        template: "exercise10-fix-vm.yaml.j2"
-      register: fixvm
-      until: fixvm is succeeded
+        state: absent
+        template: "exercise10-secret.yaml.j2"
+      register: secretidrsa
+      until: secretidrsa is succeeded
       retries: 60
       delay: 10
-      failed_when: fixvm is failed or fixvm.failed
-    
-    - name: Exercise10 - Wait for VM
-      pause:
-        seconds: 10
+      failed_when: secretidrsa is failed or secretidrsa.failed
+
+    - name: Create SSH config file with StrictHostKeyChecking no
+      ansible.builtin.copy:
+        dest: '/home/{{ user }}/.ssh/config'
+        content: |
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+        owner: '{{ user }}'
+        group: '{{ user }}'
+        mode: '0600'
+
+    - name: Creating NAD
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise10-create-nad.yaml.j2"
+      register: createnad
+      until: createnad is succeeded
+      retries: 60
+      delay: 10
+      failed_when: createnad is failed or createnad.failed
+
+    - name: Get user SSH key
+      ansible.builtin.slurp:
+        src: "/home/{{ user }}/.ssh/id_rsa.pub"
+      register: usersshkey
+
+    - name: Create the idrsa secret
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise10-secret.yaml.j2"
+      register: secretidrsa
+      until: secretidrsa is succeeded
+      retries: 60
+      delay: 10
+      failed_when: secretidrsa is failed or secretidrsa.failed
+
+    - name: Creating VM A
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise10-create-vm-a.yaml.j2"
+      register: createvma
+      until: createvma is succeeded
+      retries: 60
+      delay: 10
+      failed_when: createvma is failed or createvma.failed
+
+    - name: Creating VM B
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise10-create-vm-b.yaml.j2"
+      register: createvmb
+      until: createvmb is succeeded
+      retries: 60
+      delay: 10
+      failed_when: createvmb is failed or createvmb.failed
+
+    - name: Wait for VM A to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise10-a"
+      register: exercise10ainfo
+      until: " exercise10ainfo.resources | length > 0 and exercise10ainfo.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise10ainfo.resources | length == 0
+
+    - name: Wait for VM B to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise10-b"
+      register: exercise10binfo
+      until: " exercise10binfo.resources | length > 0 and exercise10binfo.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise10binfo.resources | length == 0

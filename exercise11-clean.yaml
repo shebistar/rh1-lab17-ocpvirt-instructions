@@ -59,7 +59,7 @@
     - name: Removing the idrsa secret
       kubernetes.core.k8s:
         state: absent
-        template: "exercise12-secret.yaml.j2"
+        template: "exercise11-secret.yaml.j2"
       register: secretidrsa
       until: secretidrsa is succeeded
       retries: 60
