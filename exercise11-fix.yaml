@@ -46,6 +46,11 @@
       delay: 2
       until: cleanvmb.resources | length == 0
 
+    - name: Get user SSH key
+      ansible.builtin.slurp:
+        src: "/home/{{ user }}/.ssh/id_rsa.pub"
+      register: usersshkey
+
     - name: Removing NAD
       kubernetes.core.k8s:
         state: absent
@@ -75,11 +80,6 @@
       retries: 60
       delay: 10
       failed_when: createnad is failed or createnad.failed
-
-    - name: Get user SSH key
-      ansible.builtin.slurp:
-        src: "/home/{{ user }}/.ssh/id_rsa.pub"
-      register: usersshkey
 
     - name: Create the idrsa secret
       kubernetes.core.k8s:
