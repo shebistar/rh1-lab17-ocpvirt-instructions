@@ -181,9 +181,14 @@
               node-role.kubernetes.io/infra: ""
       loop: "{{ controlplane_nodes_list }}"
 
-    - name: Add label userX=true to all worker nodes
+    - name: Add label userX=true to the current worker node
       ansible.builtin.command:
         cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length - 1 ] }}" user{{ item | int }}="true"
+      with_sequence: start=1 end={{ num_users }}
+
+    - name: Add label userX=true to the next worker node
+      ansible.builtin.command:
+        cmd: oc label node "{{ nodes_list[item | int  % nodes_list | length - 2 ] }}" user{{ item | int }}="true"
       with_sequence: start=1 end={{ num_users }}
 
     - name: New /etc/bashrc file
