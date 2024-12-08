@@ -40,6 +40,17 @@
       retries: 60
       delay: 10
 
+    - name: Create SSH config file with StrictHostKeyChecking no
+      ansible.builtin.copy:
+        dest: '/home/{{ user }}/.ssh/config'
+        content: |
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+        owner: '{{ user }}'
+        group: '{{ user }}'
+        mode: '0600'
+
     - name: Get user SSH key
       ansible.builtin.slurp:
         src: "/home/{{ user }}/.ssh/id_rsa.pub"

@@ -7,6 +7,7 @@ metadata:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
     app: "exercise4"
+    kubevirt.io/dynamic-credentials-support: 'true'
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
@@ -116,5 +117,6 @@ spec:
               runcmd:
                 - systemctl daemon-reload
                 - systemctl enable --now stress.service
+                - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
 
           name: cloudinitdisk
