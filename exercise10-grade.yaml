@@ -6,34 +6,19 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Exercise10 - Get Virtual Machine status
-      kubernetes.core.k8s_info:
-        kind: VirtualMachineInstance
-        namespace: "namespace-{{ user }}"
-        name: exercise10
-      register: exercise10_info
+    - name: Check if exercise10-b vm is reachable
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise10-a --command 'ping -c1 192.168.0.11'
+      ignore_errors: true
+      no_log: true
+      register: testping
 
-    - name: Exercise10 - Check if VM is running
+    - name: Check the exercise10-a status
+      ansible.builtin.fail:
+        msg: "Ooops, The exercise10-a virtual machine is not reachable."
+      when: testping.rc != 0
+
+    - name: Check the exercise10-a status
       ansible.builtin.debug:
-        msg: "The Virtual Machine is running."
-      when: exercise10_info.resources[0].status.phase == "Running"
-
-    - name: Exercise10 - Check if VM is not running
-      ansible.builtin.debug:
-        msg: "The Virtual Machine is NOT running."
-      when: exercise10_info.resources[0].status.phase != "Running"
-
-    - name: Exercise10 - Check if the VM has an IP address assigned
-      set_fact:
-        ip_exists: "{{ exercise10_info.resources[0].status.interfaces[0].ipAddress is defined and exercise10_info.resources[0].status.interfaces[0].ipAddress | length > 0 }}"
-      when: exercise10_info.resources | length > 0 and
-            exercise10_info.resources[0].status.interfaces | length > 0
-
-    - name: Exercise10 - Display the result
-      debug:
-        msg: >
-          {% if ip_exists %}
-          The VM has an IP address: {{ exercise10_info.resources[0].status.interfaces[0].ipAddress }}
-          {% else %}
-          The VM does not have an IP address assigned.
-          {% endif %}
+        msg: "Nice job, the access to all virtual machines are working as expected."
+      when: testping.rc == 0
