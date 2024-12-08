@@ -69,7 +69,11 @@ spec:
           type: pc-q35-rhel9.4.0
         memory:
           guest: 4Gi
-        resources: {}
+        resources:
+          requests:
+            cpu: 2
+          limits:
+            cpu: 4
       networks:
         - name: default
           pod: {}
