@@ -77,7 +77,7 @@
       delay: 10
       failed_when: exercise4info.resources | length == 0
 
-    - name: Sleeping for 2 minutes to generate data on dashboards, you can get a coffee!
+    - name: Sleeping for 2 minutes to generate load
       ansible.builtin.pause:
         minutes: 2
 
