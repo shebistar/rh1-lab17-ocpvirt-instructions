@@ -98,7 +98,7 @@ spec:
               password: redhat1
               chpasswd: { expire: False }
               packages:
-                - https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/Packages/s/stress-1.0.4-29.el9.x86_64.rpm
+                - https://gpte-public-documents.s3.us-east-1.amazonaws.com/rh1_2025_lab17/stress-1.0.4-29.el9.x86_64.rpm
               write_files:
                 - path: /etc/systemd/system/stress.service
                   permissions: '0644'
