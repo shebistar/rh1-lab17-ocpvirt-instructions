@@ -37,3 +37,9 @@
     - name: Exercise5 - Fixing data disk 1 to virtual machine
       ansible.builtin.command: virtctl addvolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5fixdatadisk1
+
+
+
+
+
+
