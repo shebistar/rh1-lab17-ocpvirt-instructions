@@ -603,7 +603,7 @@
             kind: ClusterRole
             name: network-access
             apiGroup: rbac.authorization.k8s.io
-        with_sequence: start=1 end={{ num_users }}
+      with_sequence: start=1 end={{ num_users }}
       ignore_errors: true
 
     - name: Configuring clusterrolebinding for ex10 on users part 2
