@@ -558,37 +558,70 @@
       kubernetes.core.k8s:
        kind: rbac.authorization.k8s.io/v1
        definition:
+         apiVersion: rbac.authorization.k8s.io/v1
+         kind: ClusterRole
+         metadata:
+           name: network-access
+         rules:
+           - apiGroups:
+               - operator.openshift.io
+             resources:
+               - networks
+             verbs:
+               - get
+               - list
+               - watch
+      ignore_errors: true
+
+    - name: Configuring clusterrole for ex10 part 2
+      kubernetes.core.k8s:
+        kind: rbac.authorization.k8s.io/v1
+        definition:
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
           metadata:
-            name: network-access
+            name: read-nodenetworkstates-cluster
           rules:
-            - apiGroups:
-                - operator.openshift.io
-              resources:
-                - networks
-              verbs:
-                - get
-                - list
-                - watch
+          - apiGroups: ["nmstate.io"]
+            resources: ["nodenetworkstates"]
+            verbs: ["get", "list", "watch"]
       ignore_errors: true
 
     - name: Configuring clusterrolebinding for ex10 on users
       kubernetes.core.k8s:
-       kind: rbac.authorization.k8s.io/v1
-       definition:
-        apiVersion: rbac.authorization.k8s.io/v1
-        kind: ClusterRoleBinding
-        metadata:
-          name: network-access-binding
-        subjects:
-          - kind: User
-            name: user{{ item }}
+        kind: rbac.authorization.k8s.io/v1
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: network-access-binding
+          subjects:
+            - kind: User
+              name: user{{ item }}
+              apiGroup: rbac.authorization.k8s.io
+          roleRef:
+            kind: ClusterRole
+            name: network-access
             apiGroup: rbac.authorization.k8s.io
-        roleRef:
-          kind: ClusterRole
-          name: network-access
-          apiGroup: rbac.authorization.k8s.io
+        with_sequence: start=1 end={{ num_users }}
+      ignore_errors: true
+
+    - name: Configuring clusterrolebinding for ex10 on users part 2
+      kubernetes.core.k8s:
+        kind: rbac.authorization.k8s.io/v1
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: read-nodenetworkstates-cluster-binding
+          subjects:
+            - kind: User
+              name: user{{ item }}
+              apiGroup: rbac.authorization.k8s.io
+          roleRef:
+            kind: ClusterRole
+            name: read-nodenetworkstates-cluster
+            apiGroup: rbac.authorization.k8s.io
       with_sequence: start=1 end={{ num_users }}
       ignore_errors: true
 
