@@ -428,26 +428,26 @@
       when:
         - nmstate_cfg | default(false) | bool
 
-    - name: Configuring NMState NNCP
-      kubernetes.core.k8s:
-        kind: NodeNetworkConfigurationPolicy
-        definition:
-          apiVersion: nmstate.io/v1
-          kind: NodeNetworkConfigurationPolicy
-          metadata:
-            name: br-ex-network
-          spec:
-            nodeSelector:
-              node-role.kubernetes.io/worker: ''
-            desiredState:
-              ovn:
-                bridge-mappings:
-                  - localnet: br-ex-network
-                    bridge: br-ex
-                    state: present
-      ignore_errors: true
-      when:
-        - nmstate_cfg | default(false) | bool
+    # - name: Configuring NMState NNCP
+    #   kubernetes.core.k8s:
+    #     kind: NodeNetworkConfigurationPolicy
+    #     definition:
+    #       apiVersion: nmstate.io/v1
+    #       kind: NodeNetworkConfigurationPolicy
+    #       metadata:
+    #         name: br-ex-network
+    #       spec:
+    #         nodeSelector:
+    #           node-role.kubernetes.io/worker: ''
+    #         desiredState:
+    #           ovn:
+    #             bridge-mappings:
+    #               - localnet: br-ex-network
+    #                 bridge: br-ex
+    #                 state: present
+    #   ignore_errors: true
+    #   when:
+    #     - nmstate_cfg | default(false) | bool
 
     - name: Remove argocd CRD on openshift-gitops
       kubernetes.core.k8s:
@@ -583,7 +583,7 @@
             name: read-nodenetworkstates-cluster
           rules:
           - apiGroups: ["nmstate.io"]
-            resources: ["nodenetworkstates"]
+            resources: ["nodenetworkstates", "nodenetworkconfigurationenactments", "nodenetworkconfigurationpolicies"]
             verbs: ["get", "list", "watch"]
       ignore_errors: true
 
