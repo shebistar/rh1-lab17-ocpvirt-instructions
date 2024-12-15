@@ -82,10 +82,10 @@
         group: '{{ user }}'
         mode: '0600'
 
-    - name: Creating NAD
+    - name: Creating NAD layer2
       kubernetes.core.k8s:
         state: present
-        template: "exercise10-create-nad.yaml.j2"
+        template: "exercise10-create-nad-layer2.yaml.j2"
       register: createnad
       until: createnad is succeeded
       retries: 60
