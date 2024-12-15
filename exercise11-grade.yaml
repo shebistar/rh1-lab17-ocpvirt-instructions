@@ -12,6 +12,7 @@
       ignore_errors: true
       no_log: true
       register: testping
+      until: testping.rc == 0
       retries: 12
       delay: 5
 
