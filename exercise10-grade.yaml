@@ -6,12 +6,15 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Check if exercise10-b vm is reachable
+    - name: Check if exercise10-b VM is reachable
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise10-a --command 'ping -c1 192.168.0.11'
       ignore_errors: true
       no_log: true
-      register: testping
+      register: testing
+      until: testing.rc == 0
+      retries: 5
+      delay: 5
 
     - name: Check the exercise10-a status
       ansible.builtin.fail:
