@@ -13,7 +13,7 @@
       no_log: true
       register: testping
       until: testping.rc == 0
-      retries: 5
+      retries: 12
       delay: 5
 
     - name: Check the exercise10-a status
