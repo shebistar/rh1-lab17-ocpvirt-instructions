@@ -6,10 +6,13 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Getting the exercise10-b ip address
+    - name: Getting the exercise10-b IP address until it's not empty
       ansible.builtin.command:
         cmd: "oc get vmi exercise12-b -n namespace-{{ user }} -o jsonpath='{.status.interfaces[1].ipAddress}'"
       register: exercise11bip
+      until: exercise11bip.stdout != ""
+      retries: 12
+      delay: 5
 
     - name: Check if exercise12-b app is reachable
       ansible.builtin.command:
