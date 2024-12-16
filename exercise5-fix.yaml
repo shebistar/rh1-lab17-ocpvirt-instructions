@@ -6,11 +6,11 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Exercise5 - Removing data disk 1 from virtual machine
+    - name: Removing data disk 1 from virtual machine
       ansible.builtin.command: virtctl removevolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5datadisk1
 
-    - name: Exercise5 - Removing data volume from virtual machine
+    - name: Removing data volume from virtual machine
       kubernetes.core.k8s:
         state: absent
         template: "exercise5-breakdatavol.yaml.j2"
@@ -20,11 +20,11 @@
       delay: 10
       failed_when: exercise5datavol is failed or exercise5datavol.failed
 
-    - name: Exercise5 - Wait for removing disk and data volume
+    - name: Wait for removing disk and data volume
       pause:
         seconds: 5
 
-    - name: Exercise5 - Fixing data volume to virtual machine
+    - name: Fixing data volume to virtual machine
       kubernetes.core.k8s:
         state: present
         template: "exercise5-fixdatavol.yaml.j2"
@@ -34,7 +34,7 @@
       delay: 10
       failed_when: exercise5fixdatavol is failed or exercise5fixdatavol.failed
 
-    - name: Exercise5 - Fixing data disk 1 to virtual machine
+    - name: Fixing data disk 1 to virtual machine
       ansible.builtin.command: virtctl addvolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5fixdatadisk1
 

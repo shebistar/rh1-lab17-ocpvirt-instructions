@@ -6,19 +6,19 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Exercise5 - Get Virtual Machine status
+    - name: Get Virtual Machine status
       kubernetes.core.k8s_info:
         kind: VirtualMachine
         namespace: "namespace-{{ user }}"
         name: exercise5
       register: exercise5_info
 
-    - name: Exercise5 - Check if VM is running
+    - name: Check if VM is running
       ansible.builtin.debug:
         msg: "The Virtual Machine is running."
       when: exercise5_info.resources[0].status.printableStatus == "Running"
 
-    - name: Exercise5 - Check if VM is not running
+    - name: Check if VM is not running
       ansible.builtin.debug:
         msg: "The Virtual Machine is NOT running."
       when: exercise5_info.resources[0].status.printableStatus != "Running"

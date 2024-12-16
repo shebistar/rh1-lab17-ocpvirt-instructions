@@ -7,11 +7,11 @@
 
   tasks:
 
-    - name: Exercise5 - Removing data disk 1 from virtual machine
+    - name: Removing data disk 1 from virtual machine
       ansible.builtin.command: virtctl removevolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5datadisk1
 
-    - name: Exercise5 - Delete virtual machine
+    - name: Delete virtual machine
       kubernetes.core.k8s:
         state: absent
         template: "exercise5-create-vm.yaml.j2"
@@ -21,7 +21,7 @@
       delay: 10
       failed_when: breakvm is failed or breakvm.failed
 
-    - name: Exercise5 - Removing data volume from virtual machine
+    - name: Removing data volume from virtual machine
       kubernetes.core.k8s:
         state: absent
         template: "exercise5-fixdatavol.yaml.j2"
