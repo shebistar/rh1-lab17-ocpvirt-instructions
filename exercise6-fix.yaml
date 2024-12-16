@@ -6,6 +6,48 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
+    - name: Removing exercise6 virtual machine
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise6-create-vm.yaml.j2"
+      register: exercise6vm
+      until: exercise6vm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: exercise6vm is failed or exercise6vm.failed
+
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise6"
+      register: cleanvm
+      retries: 60
+      delay: 2
+      until: cleanvm.resources | length == 0
+
+    - name: Breaking the exercise6
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise6-create-vm.yaml.j2"
+      register: breakvm
+      until: breakvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: breakvm is failed or breakvm.failed
+
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise6"
+      register: exercise6info
+      until: "exercise6info.resources | length > 0 and exercise6info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise6info.resources | length == 0
+
     - name: Set VM to stopped state
       kubernetes.core.k8s:
         namespace: "namespace-{{ user }}"

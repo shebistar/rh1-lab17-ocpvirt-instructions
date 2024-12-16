@@ -87,4 +87,3 @@
       retries: 60
       delay: 10
       failed_when: exercise4info.resources | length == 0
-

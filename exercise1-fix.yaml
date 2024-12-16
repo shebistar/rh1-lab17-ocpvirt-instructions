@@ -6,28 +6,25 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Check if exercise1 VM exists
-      kubernetes.core.k8s_info:
-        namespace: "namespace-{{ user }}"
-        kind: VirtualMachine
-        name: exercise1
-      register: ex1vm
-      failed_when: false
-
-    - name: Stop VM exercise1 if it exists
+    - name: Clean the exercise1
       kubernetes.core.k8s:
-        namespace: "namespace-{{ user }}"
-        kind: VirtualMachine
-        name: exercise1
-        state: present
-        definition:
-          spec:
-            running: false
-      register: stopvm
-      until: stopvm is succeeded
+        state: absent
+        template: "exercise1-break-vm.yaml.j2"
+      register: cleanvm
+      until: cleanvm is succeeded
       retries: 60
       delay: 10
-      when: ex1vm.resources | length > 0
+      failed_when: cleanvm is failed or cleanvm.failed
+
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercises"
+      register: cleanvm
+      retries: 60
+      delay: 2
+      until: cleanvm.resources | length == 0
 
     - name: Fixing the exercise1
       kubernetes.core.k8s:
