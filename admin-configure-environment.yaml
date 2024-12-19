@@ -583,3 +583,36 @@
       when:
         - nmstate_cfg | default(false) | bool
       ignore_errors: true
+
+    - name: Get list of OCP nodes
+      kubernetes.core.k8s_info:
+        kind: Node
+      register: node_list
+
+    - name: Extract node names
+      ansible.builtin.set_fact:
+        node_names: "{{ node_list.resources | map(attribute='metadata.name') | list }}"
+ 
+    - name: Wait for ip_forward to be 0 on OCP nodes
+      ansible.builtin.command:
+        cmd: >
+          oc debug node/{{ item }} -- chroot /host bash -c "cat /proc/sys/net/ipv4/ip_forward"
+      register: ipforward
+      until: ipforward.stdout == "1"
+      retries: 60
+      delay: 10
+      with_items: "{{ node_names }}"
+
+    - name: Change ip_forward to be 1 on OCP nodes
+      ansible.builtin.command:
+        cmd: >
+          oc debug node/{{ item }} -- chroot /host bash -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+      register: ipforward
+      with_items: "{{ node_names }}"
+
+    - name: Execute sysctl -p on OCP nodes
+      ansible.builtin.command:
+        cmd: >
+          oc debug node/{{ item }} -- chroot /host bash -c "sudo sysctl -p"
+      register: ipforward
+      with_items: "{{ node_names }}"
