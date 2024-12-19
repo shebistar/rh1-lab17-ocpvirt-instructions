@@ -598,7 +598,7 @@
         cmd: >
           oc debug node/{{ item }} -- chroot /host bash -c "cat /proc/sys/net/ipv4/ip_forward"
       register: ipforward
-      until: ipforward.stdout == "1"
+      until: ipforward.stdout == "0"
       retries: 60
       delay: 10
       with_items: "{{ node_names }}"
