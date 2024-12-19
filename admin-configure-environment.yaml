@@ -483,13 +483,13 @@
       become: true
       become_method: sudo
 
-    - name: New /home/lab-user/generate-tmux-session.sh file
+    - name: New /home/lab-user/generate-tmux-session.sh file on CNV
       ansible.builtin.template:
         src: generate-tmux-session.sh.j2
         dest: "/home/lab-user/generate-tmux-session.sh"
         mode: '0755'
         owner: "lab-user"
-        group: "lab-user"
+        group: "100"
       ignore_errors: true
 
     - name: Run /home/lab-user/generate-tmux-session.sh
