@@ -571,19 +571,6 @@
             apiGroup: rbac.authorization.k8s.io
       with_sequence: start=1 end={{ num_users }}
 
-    - name: Create the nmstate
-      kubernetes.core.k8s:
-        kind: NMState
-        definition:
-          apiVersion: nmstate.io/v1
-          kind: NMState
-          metadata:
-            name: nmstate
-          spec: {}
-      when:
-        - nmstate_cfg | default(false) | bool
-      ignore_errors: true
-
     - name: Get list of OCP nodes
       kubernetes.core.k8s_info:
         kind: Node
@@ -616,3 +603,16 @@
           oc debug node/{{ item }} -- chroot /host bash -c "sudo sysctl -p"
       register: sysctlp
       with_items: "{{ node_names }}"
+
+    - name: Create the nmstate
+      kubernetes.core.k8s:
+        kind: NMState
+        definition:
+          apiVersion: nmstate.io/v1
+          kind: NMState
+          metadata:
+            name: nmstate
+          spec: {}
+      when:
+        - nmstate_cfg | default(false) | bool
+      ignore_errors: true
