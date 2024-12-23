@@ -27,7 +27,7 @@
       retries: 60
       delay: 10
       failed_when: exercise5info.resources | length == 0
-    
+
     - name: Add data volume to virtual machine
       kubernetes.core.k8s:
         state: present
