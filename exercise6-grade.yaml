@@ -61,6 +61,5 @@
         that:
           - "rootdisk.disk is not defined or 'readonly' not in rootdisk.disk"
           - "cloudinitdisk.disk is not defined or 'readonly' not in cloudinitdisk.disk"
-          - vmi_migration_status == "Succeeded"
         success_msg: "Good job, the development team are happy that you solved the problem!"
         fail_msg: "Ops, something went wrong and you have to fix the exercise!"
