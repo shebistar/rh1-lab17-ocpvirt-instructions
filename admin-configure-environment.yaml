@@ -320,6 +320,7 @@
       with_sequence: start=1 end={{ num_users }}
       become: true
       become_method: ansible.builtin.sudo
+      ignore_errors: true
 
     - name: Generate RSA 2048 SSH key pair for users
       community.crypto.openssh_keypair:
@@ -334,6 +335,7 @@
       with_sequence: start=1 end={{ num_users }}
       become: true
       become_method: ansible.builtin.sudo
+      ignore_errors: true
 
     - name: Ensure openshift-nmstate exists
       kubernetes.core.k8s:
@@ -405,112 +407,73 @@
       when:
         - nmstate_cfg | default(false) | bool
 
-    - name: Create the nmstate
-      kubernetes.core.k8s:
-        kind: NMState
-        definition:
-          apiVersion: nmstate.io/v1
-          kind: NMState
-          metadata:
-            name: nmstate
-          spec: {}
-      when:
-        - nmstate_cfg | default(false) | bool
-
-    - name: Pause for 20 seconds to create nmstate CRD
-      ansible.builtin.pause:
-        seconds: 20
-      when:
-        - nmstate_cfg | default(false) | bool
-
-    # - name: Configuring NMState NNCP
+    # - name: Remove argocd CRD on openshift-gitops
     #   kubernetes.core.k8s:
-    #     kind: NodeNetworkConfigurationPolicy
+    #     kind: ArgoCD
+    #     api_version: argoproj.io/v1alpha1
+    #     namespace: openshift-gitops
+    #     name: openshift-gitops
+    #     state: absent
+    #   register: removeargo
+
+    # - name: Get all applications on openshift-gitops
+    #   kubernetes.core.k8s_info:
+    #     kind: Application
+    #     api_version: argoproj.io/v1alpha1
+    #     namespace: openshift-gitops
+    #   register: application_crds
+
+    # - name: Remove applications
+    #   kubernetes.core.k8s:
+    #     kind: Application
+    #     api_version: argoproj.io/v1alpha1
+    #     namespace: openshift-gitops
+    #     name: "{{ item.metadata.name }}"
+    #     state: absent
+    #   loop: "{{ application_crds.resources }}"
+
+    # - name: Remove finalizer of the applications
+    #   kubernetes.core.k8s:
+    #     kind: Application
+    #     api_version: argoproj.io/v1alpha1
+    #     namespace: openshift-gitops
     #     definition:
-    #       apiVersion: nmstate.io/v1
-    #       kind: NodeNetworkConfigurationPolicy
     #       metadata:
-    #         name: br-ex-network
-    #       spec:
-    #         nodeSelector:
-    #           node-role.kubernetes.io/worker: ''
-    #         desiredState:
-    #           ovn:
-    #             bridge-mappings:
-    #               - localnet: br-ex-network
-    #                 bridge: br-ex
-    #                 state: present
-    #   ignore_errors: true
-    #   when:
-    #     - nmstate_cfg | default(false) | bool
+    #         name: "{{ item.metadata.name }}"
+    #         finalizers: "{{ item.metadata.finalizers | difference(['resources-finalizer.argocd.argoproj.io']) }}"
+    #   loop: "{{ application_crds.resources }}"
+    #   when: "'resources-finalizer.argocd.argoproj.io' in item.metadata.finalizers"
 
-    - name: Remove argocd CRD on openshift-gitops
-      kubernetes.core.k8s:
-        kind: ArgoCD
-        api_version: argoproj.io/v1alpha1
-        namespace: openshift-gitops
-        name: openshift-gitops
-        state: absent
-      register: removeargo
+    # - name: Removing OADP projects
+    #   kubernetes.core.k8s:
+    #     state: absent
+    #     definition:
+    #       apiVersion: v1
+    #       kind: Namespace
+    #       metadata:
+    #         name: "oadp-user{{ item }}"
+    #   register: removeoadp
+    #   until: removeoadp is succeeded
+    #   retries: 60
+    #   delay: 10
+    #   failed_when: removeoadp is failed or removeoadp.failed
+    #   with_sequence: start=1 end={{ num_users }}
 
-    - name: Get all applications on openshift-gitops
-      kubernetes.core.k8s_info:
-        kind: Application
-        api_version: argoproj.io/v1alpha1
-        namespace: openshift-gitops
-      register: application_crds
+    # - name: Remove Subscription OpenShift GitOps
+    #   kubernetes.core.k8s:
+    #     api_version: operators.coreos.com/v1alpha1
+    #     namespace: openshift-operators
+    #     kind: Subscription
+    #     name: openshift-gitops-operator
+    #     state: absent
 
-    - name: Remove applications
-      kubernetes.core.k8s:
-        kind: Application
-        api_version: argoproj.io/v1alpha1
-        namespace: openshift-gitops
-        name: "{{ item.metadata.name }}"
-        state: absent
-      loop: "{{ application_crds.resources }}"
-
-    - name: Remove finalizer of the applications
-      kubernetes.core.k8s:
-        kind: Application
-        api_version: argoproj.io/v1alpha1
-        namespace: openshift-gitops
-        definition:
-          metadata:
-            name: "{{ item.metadata.name }}"
-            finalizers: "{{ item.metadata.finalizers | difference(['resources-finalizer.argocd.argoproj.io']) }}"
-      loop: "{{ application_crds.resources }}"
-      when: "'resources-finalizer.argocd.argoproj.io' in item.metadata.finalizers"
-
-    - name: Removing OADP projects
-      kubernetes.core.k8s:
-        state: absent
-        definition:
-          apiVersion: v1
-          kind: Namespace
-          metadata:
-            name: "oadp-user{{ item }}"
-      register: removeoadp
-      until: removeoadp is succeeded
-      retries: 60
-      delay: 10
-      failed_when: removeoadp is failed or removeoadp.failed
-      with_sequence: start=1 end={{ num_users }}
-
-    - name: Remove Subscription OpenShift GitOps
-      kubernetes.core.k8s:
-        api_version: operators.coreos.com/v1alpha1
-        namespace: openshift-operators
-        kind: Subscription
-        name: openshift-gitops-operator
-        state: absent
-
-    - name: Remove ClusterServiceVersion OpenShift GitOps
-      kubernetes.core.k8s:
-        api_version: operators.coreos.com/v1alpha1
-        namespace: openshift-operators
-        kind: clusterserviceversion
-        name: openshift-gitops-operator.v1.13.3
-        state: absent
+    # - name: Remove ClusterServiceVersion OpenShift GitOps
+    #   kubernetes.core.k8s:
+    #     api_version: operators.coreos.com/v1alpha1
+    #     namespace: openshift-operators
+    #     kind: clusterserviceversion
+    #     name: openshift-gitops-operator.v1.13.3
+    #     state: absent
 
     - name: New /usr/loca/bin/test-lab-performance.sh file
       ansible.builtin.template:
@@ -520,13 +483,13 @@
       become: true
       become_method: sudo
 
-    - name: New /home/lab-user/generate-tmux-session.sh file
+    - name: New /home/lab-user/generate-tmux-session.sh file on CNV
       ansible.builtin.template:
         src: generate-tmux-session.sh.j2
         dest: "/home/lab-user/generate-tmux-session.sh"
         mode: '0755'
         owner: "lab-user"
-        group: "lab-user"
+        group: "100"
       ignore_errors: true
 
     - name: Run /home/lab-user/generate-tmux-session.sh
@@ -608,20 +571,53 @@
             apiGroup: rbac.authorization.k8s.io
       with_sequence: start=1 end={{ num_users }}
 
-    # - name: Configuring br-network net-attach on all users
-    #   kubernetes.core.k8s:
-    #    kind: NetworkAttachmentDefinition
-    #    definition:
-    #      apiVersion: k8s.cni.cncf.io/v1
-    #      kind: NetworkAttachmentDefinition
-    #      metadata:
-    #        name: br-ex-network
-    #        namespace: 'namespace-user{{ item }}'
-    #      spec:
-    #        config: '{"name":"br-ex-network","type":"ovn-k8s-cni-overlay","cniVersion":"0.3.1","topology":"layer2","netAttachDefName":"namespace-user{{ item }}/br-ex-network"}'
-    #    state: present
-    #   ignore_errors: true
-    #   when:
-    #     - nmstate_cfg | default(false) | bool
-    #   with_sequence: start=1 end={{ num_users }}
+    - name: Get list of OCP nodes
+      kubernetes.core.k8s_info:
+        kind: Node
+      register: node_list
+      ignore_errors: true
 
+    - name: Extract node names
+      ansible.builtin.set_fact:
+        node_names: "{{ node_list.resources | map(attribute='metadata.name') | list }}"
+      ignore_errors: true
+ 
+    - name: Wait for ip_forward to be 0 on OCP nodes
+      ansible.builtin.command:
+        cmd: >
+          oc debug node/{{ item }} -- chroot /host bash -c "cat /proc/sys/net/ipv4/ip_forward"
+      register: ipforward
+      until: ipforward.stdout == "0"
+      retries: 60
+      delay: 10
+      with_items: "{{ node_names }}"
+      ignore_errors: true
+
+    - name: Change ip_forward to be 1 on OCP nodes
+      ansible.builtin.command:
+        cmd: >
+          oc debug node/{{ item }} -- chroot /host bash -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+      register: changeipforward
+      with_items: "{{ node_names }}"
+      ignore_errors: true
+
+    - name: Execute sysctl -p on OCP nodes
+      ansible.builtin.command:
+        cmd: >
+          oc debug node/{{ item }} -- chroot /host bash -c "sudo sysctl -p"
+      register: sysctlp
+      with_items: "{{ node_names }}"
+      ignore_errors: true
+
+    - name: Create the nmstate
+      kubernetes.core.k8s:
+        kind: NMState
+        definition:
+          apiVersion: nmstate.io/v1
+          kind: NMState
+          metadata:
+            name: nmstate
+          spec: {}
+      when:
+        - nmstate_cfg | default(false) | bool
+      ignore_errors: true
