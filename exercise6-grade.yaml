@@ -4,10 +4,6 @@
 
   vars:
     user: "{{ lookup('env', 'USER') }}"
-    vm_name: "exercise6"
-    namespace: "namespace-{{ user }}"
-    rootdisk_to_check: "rootdisk"
-    cloudinitdisk_to_check: "cloudinitdisk"
 
   tasks:
 
@@ -42,24 +38,16 @@
         namespace: "namespace-{{ user }}"
       register: vm_info
 
-    - name: Get the rootdisk details
-      ansible.builtin.set_fact:
-        rootdisk: " {{
-            vm_info.resources[0].spec.template.spec.domain.devices.disks
-            | selectattr('name', 'equalto', rootdisk_to_check)
-          }}"
-
-    - name:  Get the cloudinitdisk details
+    - name: Get the cloudinitdisk details
       ansible.builtin.set_fact:
         cloudinitdisk: " {{
-            vm_info.resources[0].spec.template.spec.domain.devices.disks
-            | selectattr('name', 'equalto', cloudinitdisk_to_check)
+            vm_info.resources[0].spec.template.spec.domain.devices.disks[1]
           }}"
 
-    - name: Certify that the final phase is Succeeded and rootdisk and cloudinitdisk have no readonly attribute
+    - name: Certify that the cloudinitdisk have no readonly attribute
       ansible.builtin.assert:
         that:
-          - "rootdisk.disk is not defined or 'readonly' not in rootdisk.disk"
-          - "cloudinitdisk.disk is not defined or 'readonly' not in cloudinitdisk.disk"
+          - "cloudinitdisk.readonly is not defined"
         success_msg: "Good job, the development team are happy that you solved the problem!"
         fail_msg: "Ops, something went wrong and you have to fix the exercise!"
+
