@@ -1,4 +1,4 @@
-- name: Cleaning the Exercise5
+- name: Cleaning the exercise5
   hosts: localhost
   gather_facts: true
 

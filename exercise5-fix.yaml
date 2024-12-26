@@ -1,4 +1,4 @@
-- name: Preparing the exercise5
+- name: Fixing the exercise5
   hosts: localhost
   gather_facts: true
 
