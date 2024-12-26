@@ -3,8 +3,6 @@ kind: VirtualMachine
 metadata:
   name: exercise6
   namespace: "namespace-{{ user }}"
-  finalizers:
-    - kubevirt.io/virtualMachineControllerFinalize
   labels:
     kubevirt.io/dynamic-credentials-support: 'true'
     app: exercise6
