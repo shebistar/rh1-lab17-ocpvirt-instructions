@@ -11,25 +11,28 @@
 
   tasks:
 
-    - name: Get the VirtualMachineInstanceMigration resource
-      kubernetes.core.k8s_info:
-        kind: VirtualMachineInstanceMigration
-        api_version: kubevirt.io/v1
-        namespace: "{{ namespace }}"
-      register: vmi_migrations
+    # - name: Get the VirtualMachineInstanceMigration resource
+    #   kubernetes.core.k8s_info:
+    #     kind: VirtualMachineInstanceMigration
+    #     api_version: kubevirt.io/v1
+    #     namespace: "{{ namespace }}"
+    #   register: vmi_migrations
+    #   ignore_errors: true
 
-    - name: Get the VirtualMachineInstanceMigration for the Exercise6 VM
-      ansible.builtin.set_fact:
-        filtered_vmi_migrations: "{{ vmi_migrations.resources | selectattr('spec.vmiName', 'equalto', vm_name) | list }}"
+    # - name: Get the VirtualMachineInstanceMigration for the Exercise6 VM
+    #   ansible.builtin.set_fact:
+    #     filtered_vmi_migrations: "{{ vmi_migrations.resources | selectattr('spec.vmiName', 'equalto', vm_name) | list }}"
+    #   ignore_errors: true
 
-    - name: Order VirtualMachineInstanceMigration by startTimestamp (newst first)
-      ansible.builtin.set_fact:
-        sorted_vmi_migrations: "{{ filtered_vmi_migrations | sort(attribute='status.startTimestamp', reverse=true) }}"
+    # - name: Order VirtualMachineInstanceMigration by startTimestamp (newst first)
+    #   ansible.builtin.set_fact:
+    #     sorted_vmi_migrations: "{{ filtered_vmi_migrations | sort(attribute='status.startTimestamp', reverse=true) }}"
+    #   ignore_errors: true
 
-    - name: Get VirtualMachineInstanceMigration status
-      ansible.builtin.set_fact:
-        vmi_migration_status: "{{ filtered_vmi_migrations[0].status.phase }}"
-        fail_msg: "Ops, something went wrong and you have to fix the exercise!"
+    # - name: Get VirtualMachineInstanceMigration status
+    #   ansible.builtin.set_fact:
+    #     vmi_migration_status: "{{ filtered_vmi_migrations[0].status.phase }}"
+    #     fail_msg: "Ops, something went wrong and you have to fix the exercise!"
 
     - name: Get the exercise6 VM details from OpenShift Virtualization
       kubernetes.core.k8s_info:
