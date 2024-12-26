@@ -3,6 +3,8 @@ kind: DataVolume
 metadata:
   name: exercise5-vol-data1
   namespace: namespace-{{ user }}
+  labels:
+    app: exercise5
 spec:
   preallocation: false
   source:

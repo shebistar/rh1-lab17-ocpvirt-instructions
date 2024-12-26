@@ -3,6 +3,9 @@ kind: VirtualMachine
 metadata:
   name: "exercise5"
   namespace: "namespace-{{ user }}"
+  labels:
+    kubevirt.io/dynamic-credentials-support: 'true'
+    app: exercise5
 spec:
   dataVolumeTemplates:
     - metadata:
@@ -25,6 +28,15 @@ spec:
       labels:
         network.kubevirt.io/headlessService: headless
     spec:
+      accessCredentials:
+        - sshPublicKey:
+            propagationMethod:
+              qemuGuestAgent:
+                users:
+                  - lab-user
+            source:
+              secret:
+                secretName: idrsa
       architecture: amd64
       domain:
         cpu:
@@ -70,4 +82,6 @@ spec:
               user: "lab-user"
               password: redhat1
               chpasswd: { expire: False }
+              runcmd:
+              - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
           name: cloudinitdisk
