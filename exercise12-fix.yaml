@@ -147,29 +147,25 @@
       delay: 10
       failed_when: createvmb is failed or createvmb.failed
 
-    - name: Wait for VM A to be running
-      kubernetes.core.k8s_info:
-        api_version: kubevirt.io/v1
-        kind: VirtualMachineInstance
-        namespace: "namespace-{{ user }}"
-        name: "exercise12-a"
-      register: exercise12ainfo
-      until: " exercise12ainfo.resources | length > 0 and exercise12ainfo.resources[0].status.phase == 'Running'"
-      retries: 60
-      delay: 10
-      failed_when: exercise12ainfo.resources | length == 0
+    - name: Wait for exercise12-a
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise12-a
+      ignore_errors: true
+      no_log: true
+      register: testssha
+      until: testssha.rc == 0
+      retries: 20
+      delay: 5
 
-    - name: Wait for VM B to be running
-      kubernetes.core.k8s_info:
-        api_version: kubevirt.io/v1
-        kind: VirtualMachineInstance
-        namespace: "namespace-{{ user }}"
-        name: "exercise12-b"
-      register: exercise12binfo
-      until: " exercise12binfo.resources | length > 0 and exercise12binfo.resources[0].status.phase == 'Running'"
-      retries: 60
-      delay: 10
-      failed_when: exercise12binfo.resources | length == 0
+    - name: Wait for exercise12-b
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise12-b
+      ignore_errors: true
+      no_log: true
+      register: testsshb
+      until: testsshb.rc == 0
+      retries: 20
+      delay: 5
 
     - name: Fixing exercise part 1
       kubernetes.core.k8s:
