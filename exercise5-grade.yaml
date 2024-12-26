@@ -6,48 +6,20 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
-    - name: Get Virtual Machine status
-      kubernetes.core.k8s_info:
-        kind: VirtualMachine
-        namespace: "namespace-{{ user }}"
-        name: exercise5
-      register: exercise5_info
+    - name: Testing fdisk on exercise5 virtual machine
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise5 --command 'sudo fdisk -l /dev/sda'
+      ignore_errors: true 
+      no_log: true
+      register: testssh
+      until: testssh.rc == 0
 
-    - name: Check if VM is running
+    - name: Check if disk is on virtual machine OS
+      ansible.builtin.fail:
+        msg: "oooo no, disk is not working on exercise5 virtual machine"
+      when: testssh.rc != 0
+
+    - name: Check the exercise8 status
       ansible.builtin.debug:
-        msg: "The Virtual Machine is running."
-      when: exercise5_info.resources[0].status.printableStatus == "Running"
-
-    - name: Check if VM is not running
-      ansible.builtin.debug:
-        msg: "The Virtual Machine is NOT running."
-      when: exercise5_info.resources[0].status.printableStatus != "Running"
-
-    - name: Extract disk information
-      ansible.builtin.debug:
-        msg: >
-          VM "{{ exercise5_info.resources[0].metadata.name }}" has the following disks:
-          {{ exercise5_info.resources[0].spec.template.spec.domain.devices.disks | default([]) }}
-
-    - name: Check if the specified disk exists
-      ansible.builtin.set_fact:
-        disk_exists: >
-          {{ exercise5_info.resources[0].spec.template.spec.domain.devices.disks
-             | selectattr('name', 'equalto', 'exercise5-vol-data1')
-             | list
-             | length > 0 }}
-
-    - name: Debug disk existence
-      ansible.builtin.debug:
-        msg: >
-          Disk 'exercise5-vol-data1' 
-          {% if disk_exists %}
-          exists in the VM configuration.
-          {% else %}
-          does not exist in the VM configuration.
-          {% endif %}
-
-    - name: Fail if the specified disk does not exist
-      fail:
-        msg: "The disk 'exercise5-vol-data1' does not exist in the VM configuration."
-      when: not disk_exists
+        msg: "oohhh yes, now the user can see the extra disk on virtual machine!"
+      when: testssh.rc == 0
