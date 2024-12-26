@@ -9,37 +9,70 @@
     - name: Removing data disk 1 from virtual machine
       ansible.builtin.command: virtctl removevolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5datadisk1
+      ignore_errors: true
+
+    - name: Delete virtual machine
+      kubernetes.core.k8s:
+        state: absent
+        template: "exercise5-create-vm.yaml.j2"
+      register: breakvm
+      until: breakvm is succeeded
+      retries: 60
+      delay: 10
+      failed_when: breakvm is failed or breakvm.failed
 
     - name: Removing data volume from virtual machine
       kubernetes.core.k8s:
         state: absent
-        template: "exercise5-breakdatavol.yaml.j2"
+        template: "exercise5-fixdatavol.yaml.j2"
       register: exercise5datavol
       until: exercise5datavol is succeeded
       retries: 5
       delay: 10
       failed_when: exercise5datavol is failed or exercise5datavol.failed
 
-    - name: Wait for removing disk and data volume
-      pause:
-        seconds: 5
+    - name: Wait for the Virtual Machine to be removed
+      kubernetes.core.k8s_info:
+        kind: VirtualMachine
+        namespace: "namespace-{{ user }}"
+        name: "exercise5"
+      register: cleanvm
+      retries: 60
+      delay: 2
+      until: cleanvm.resources | length == 0
 
-    - name: Fixing data volume to virtual machine
+    - name: Creating virtual machine
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise5-create-vm.yaml.j2"
+      register: exercise5vm
+      until: exercise5vm is succeeded
+      retries: 5
+      delay: 10
+      failed_when: exercise5vm is failed or exercise5vm.failed
+
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise5"
+      register: exercise5info
+      until: "exercise5info.resources | length > 0 and exercise5info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise5info.resources | length == 0
+
+    - name: Add data volume to virtual machine
       kubernetes.core.k8s:
         state: present
         template: "exercise5-fixdatavol.yaml.j2"
-      register: exercise5fixdatavol
-      until: exercise5fixdatavol is succeeded
+      register: exercise5datavol
+      until: exercise5datavol is succeeded
       retries: 5
       delay: 10
-      failed_when: exercise5fixdatavol is failed or exercise5fixdatavol.failed
+      failed_when: exercise5datavol is failed or exercise5datavol.failed
 
-    - name: Fixing data disk 1 to virtual machine
+    - name: Add data disk 1 to virtual machine
       ansible.builtin.command: virtctl addvolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5fixdatadisk1
-
-
-
-
-
-

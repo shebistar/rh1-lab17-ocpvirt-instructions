@@ -10,6 +10,7 @@
     - name: Removing data disk 1 from virtual machine
       ansible.builtin.command: virtctl removevolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5datadisk1
+      ignore_errors: true
 
     - name: Delete virtual machine
       kubernetes.core.k8s:

@@ -24,13 +24,13 @@
       when: exercise5_info.resources[0].status.printableStatus != "Running"
 
     - name: Extract disk information
-      debug:
+      ansible.builtin.debug:
         msg: >
           VM "{{ exercise5_info.resources[0].metadata.name }}" has the following disks:
           {{ exercise5_info.resources[0].spec.template.spec.domain.devices.disks | default([]) }}
 
     - name: Check if the specified disk exists
-      set_fact:
+      ansible.builtin.set_fact:
         disk_exists: >
           {{ exercise5_info.resources[0].spec.template.spec.domain.devices.disks
              | selectattr('name', 'equalto', 'exercise5-vol-data1')
@@ -38,7 +38,7 @@
              | length > 0 }}
 
     - name: Debug disk existence
-      debug:
+      ansible.builtin.debug:
         msg: >
           Disk 'exercise5-vol-data1' 
           {% if disk_exists %}
