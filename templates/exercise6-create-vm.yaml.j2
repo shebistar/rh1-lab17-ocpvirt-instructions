@@ -6,6 +6,7 @@ metadata:
   finalizers:
     - kubevirt.io/virtualMachineControllerFinalize
   labels:
+    kubevirt.io/dynamic-credentials-support: 'true'
     app: exercise6
 spec:
   dataVolumeTemplates:
@@ -36,6 +37,15 @@ spec:
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
+      accessCredentials:
+        - sshPublicKey:
+            propagationMethod:
+              qemuGuestAgent:
+                users:
+                  - lab-user
+            source:
+              secret:
+                secretName: idrsa
       architecture: amd64
       domain:
         cpu:
@@ -83,4 +93,6 @@ spec:
               user: "lab-user"
               password: redhat1
               chpasswd: { expire: False }
+              runcmd:
+              - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
           name: cloudinitdisk
