@@ -24,5 +24,5 @@
       ansible.builtin.assert:
         that:
           - "'readonly' not in cloudinitdisk"
-        success_msg: "Good job, the development team are happy that you solved the problem!"
+        success_msg: "Yeah Yeah Yeah, the virtual machine can be migrate to another node now!"
         fail_msg: "Ops, something went wrong and you have to fix the exercise!"
