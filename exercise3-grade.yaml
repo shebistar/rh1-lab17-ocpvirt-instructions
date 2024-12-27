@@ -19,6 +19,7 @@
         method: GET
         return_content: true
       register: urlcontent
+      no_log: true
 
     - name: Assert that is in the response body expected
       ansible.builtin.assert:
