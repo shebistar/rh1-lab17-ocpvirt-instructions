@@ -16,18 +16,22 @@ logger -p local0.notice "Initiating $0 with option(s) $@"
 echo "Initiating $0 with option(s) $@"
  
 breaks() {
+	oc project namespace-${USER} > /dev/null 2>&1;
   ansible-playbook /opt/rh1-lab17-ocpvirt/$1-break.yaml
 }
  
 grade() {
+	oc project namespace-${USER} > /dev/null 2>&1;
   ansible-playbook /opt/rh1-lab17-ocpvirt/$1-grade.yaml
 }
  
 fix() {
+	oc project namespace-${USER} > /dev/null 2>&1;
   ansible-playbook /opt/rh1-lab17-ocpvirt/$1-fix.yaml
 }
 
 clean() {
+	oc project namespace-${USER} > /dev/null 2>&1;
   ansible-playbook /opt/rh1-lab17-ocpvirt/$1-clean.yaml
 }
 
