@@ -59,7 +59,7 @@
     - name: Get all NetworkAttachmentDefinitions
       kubernetes.core.k8s_info:
         kind: NetworkAttachmentDefinition
-        namespace: "{{ namespace }}"
+        namespace: "namespace-{{ user }}"
       register: nad_list
 
     - name: Remove all NetworkAttachmentDefinitions created by the user
