@@ -6,6 +6,32 @@
     user: "{{ lookup('env', 'USER') }}"
 
   tasks:
+    - name: Create SSH config file with StrictHostKeyChecking no
+      ansible.builtin.copy:
+        dest: '/home/{{ user }}/.ssh/config'
+        content: |
+          Host *
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+        owner: '{{ user }}'
+        group: '{{ user }}'
+        mode: '0600'
+
+    - name: Get user SSH key
+      ansible.builtin.slurp:
+        src: "/home/{{ user }}/.ssh/id_rsa.pub"
+      register: usersshkey
+
+    - name: Create the idrsa secret
+      kubernetes.core.k8s:
+        state: present
+        template: "exercise3-secret.yaml.j2"
+      register: secretidrsa
+      until: secretidrsa is succeeded
+      retries: 60
+      delay: 10
+      failed_when: secretidrsa is failed or secretidrsa.failed
+
     - name: Creating exercise3 virtual machine
       kubernetes.core.k8s:
         state: present
@@ -46,14 +72,13 @@
       delay: 10
       failed_when: exercise3curlpod is failed or exercise3curlpod.failed
 
-    - name: Wait for VM to be running
-      kubernetes.core.k8s_info:
-        api_version: kubevirt.io/v1
-        kind: VirtualMachineInstance
-        namespace: "namespace-{{ user }}"
-        name: "exercise3"
-      register: exercise3info
-      until: "exercise3info.resources | length > 0 and exercise3info.resources[0].status.phase == 'Running'"
-      retries: 60
-      delay: 10
-      failed_when: exercise3info.resources | length == 0
+    - name: Wait for exercise3
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise3
+      ignore_errors: true
+      no_log: true
+      register: testssh
+      until: testssh.rc == 0
+      retries: 20
+      delay: 5
+

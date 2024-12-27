@@ -3,10 +3,9 @@ kind: VirtualMachine
 metadata:
   name: "exercise3"
   namespace: "namespace-{{ user }}"
-  finalizers:
-    - kubevirt.io/virtualMachineControllerFinalize
   labels:
-    app: "exercise3"
+    kubevirt.io/dynamic-credentials-support: 'true'
+    app: exercise3
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
@@ -36,6 +35,15 @@ spec:
         kubevirt.io/size: small
         network.kubevirt.io/headlessService: headless
     spec:
+      accessCredentials:
+        - sshPublicKey:
+            propagationMethod:
+              qemuGuestAgent:
+                users:
+                  - lab-user
+            source:
+              secret:
+                secretName: idrsa
       architecture: amd64
       domain:
         cpu:
@@ -86,6 +94,7 @@ spec:
                 - curl
 
               runcmd:
+                - [ setsebool, -P, virt_qemu_ga_manage_ssh, on ]
                 - systemctl enable httpd
                 - systemctl start httpd
                 - echo "Hello from exercise3, you are doing a great job!" > /var/www/html/index.html
