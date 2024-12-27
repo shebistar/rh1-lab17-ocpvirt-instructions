@@ -576,11 +576,15 @@
         kind: Node
       register: node_list
       ignore_errors: true
+      when:
+        - nmstate_cfg is not defined
 
     - name: Extract node names
       ansible.builtin.set_fact:
         node_names: "{{ node_list.resources | map(attribute='metadata.name') | list }}"
       ignore_errors: true
+      when:
+        - nmstate_cfg is not defined
  
     - name: Wait for ip_forward to be 0 on OCP nodes
       ansible.builtin.command:
@@ -592,6 +596,8 @@
       delay: 10
       with_items: "{{ node_names }}"
       ignore_errors: true
+      when:
+        - nmstate_cfg is not defined
 
     - name: Change ip_forward to be 1 on OCP nodes
       ansible.builtin.command:
@@ -600,6 +606,8 @@
       register: changeipforward
       with_items: "{{ node_names }}"
       ignore_errors: true
+      when:
+        - nmstate_cfg is not defined
 
     - name: Execute sysctl -p on OCP nodes
       ansible.builtin.command:
@@ -608,6 +616,8 @@
       register: sysctlp
       with_items: "{{ node_names }}"
       ignore_errors: true
+      when:
+        - nmstate_cfg is not defined
 
     - name: Create the nmstate
       kubernetes.core.k8s:
