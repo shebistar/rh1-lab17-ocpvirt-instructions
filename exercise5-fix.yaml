@@ -87,15 +87,17 @@
       delay: 10
       failed_when: exercise5vm is failed or exercise5vm.failed
 
-    - name: Wait for exercise5
-      ansible.builtin.command:
-        cmd: virtctl ssh lab-user@exercise5
-      ignore_errors: true
-      no_log: true
-      register: testssh
-      until: testssh.rc == 0
-      retries: 20
-      delay: 5
+    - name: Wait for VM to be running
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        namespace: "namespace-{{ user }}"
+        name: "exercise5"
+      register: exercise5info
+      until: "exercise5info.resources | length > 0 and exercise5info.resources[0].status.phase == 'Running'"
+      retries: 60
+      delay: 10
+      failed_when: exercise5info.resources | length == 0
 
     - name: Add data volume to virtual machine
       kubernetes.core.k8s:
@@ -110,3 +112,13 @@
     - name: Add data disk 1 to virtual machine
       ansible.builtin.command: virtctl addvolume exercise5 --volume-name=exercise5-vol-data1 --persist
       register: exercise5fixdatadisk1
+
+    - name: Wait for exercise5
+      ansible.builtin.command:
+        cmd: virtctl ssh lab-user@exercise5
+      ignore_errors: true
+      no_log: true
+      register: testssh
+      until: testssh.rc == 0
+      retries: 20
+      delay: 5
