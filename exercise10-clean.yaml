@@ -56,6 +56,21 @@
       delay: 10
       failed_when: deletenad is failed or deletenad.failed
 
+    - name: Get all NetworkAttachmentDefinitions
+      kubernetes.core.k8s_info:
+        kind: NetworkAttachmentDefinition
+        namespace: "{{ namespace }}"
+      register: nad_list
+
+    - name: Remove all NetworkAttachmentDefinitions created by the user
+      kubernetes.core.k8s:
+        state: absent
+        kind: NetworkAttachmentDefinition
+        namespace: "namespace-{{ user }}"
+        name: "{{ item.metadata.name }}"
+      with_items: "{{ nad_list.resources }}"
+      when: nad_list.resources | length > 0
+
     - name: Get user SSH key
       ansible.builtin.slurp:
         src: "/home/{{ user }}/.ssh/id_rsa.pub"
