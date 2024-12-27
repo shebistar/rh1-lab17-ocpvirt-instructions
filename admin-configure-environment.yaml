@@ -71,11 +71,11 @@
       when:
         - nmstate_cfg | default(false) | bool
 
-    # - name: Pause for 60 seconds to wait for pods
-    #   ansible.builtin.pause:
-    #     seconds: 60
-    #   when:
-    #     - nmstate_cfg | default(false) | bool
+    - name: Pause for 60 seconds to wait for pods
+      ansible.builtin.pause:
+        seconds: 60
+      when:
+        - nmstate_cfg | default(false) | bool
 
     # - name: Wait for all pods to be running on openshift-nmstate
     #   kubernetes.core.k8s_info:
