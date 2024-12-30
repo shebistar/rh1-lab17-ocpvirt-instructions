@@ -26,19 +26,19 @@
       delay: 2
       until: cleanvm.resources | length == 0
 
-    - name: Get user SSH key
-      ansible.builtin.slurp:
-        src: "/home/{{ user }}/.ssh/id_rsa.pub"
-      register: usersshkey
+    # - name: Get user SSH key
+    #   ansible.builtin.slurp:
+    #     src: "/home/{{ user }}/.ssh/id_rsa.pub"
+    #   register: usersshkey
 
-    - name: Removing the idrsa secret
-      kubernetes.core.k8s:
-        state: absent
-        template: "exercise4-secret.yaml.j2"
-      register: secretidrsa
-      until: secretidrsa is succeeded
-      retries: 60
-      delay: 10
+    # - name: Removing the idrsa secret
+    #   kubernetes.core.k8s:
+    #     state: absent
+    #     template: "exercise4-secret.yaml.j2"
+    #   register: secretidrsa
+    #   until: secretidrsa is succeeded
+    #   retries: 60
+    #   delay: 10
 
     - name: Create SSH config file with StrictHostKeyChecking no
       ansible.builtin.copy:

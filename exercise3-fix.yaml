@@ -61,15 +61,15 @@
         src: "/home/{{ user }}/.ssh/id_rsa.pub"
       register: usersshkey
 
-    - name: Removing the idrsa secret
-      kubernetes.core.k8s:
-        state: absent
-        template: "exercise3-secret.yaml.j2"
-      register: secretidrsa
-      until: secretidrsa is succeeded
-      retries: 60
-      delay: 10
-      failed_when: secretidrsa is failed or secretidrsa.failed
+    # - name: Removing the idrsa secret
+    #   kubernetes.core.k8s:
+    #     state: absent
+    #     template: "exercise3-secret.yaml.j2"
+    #   register: secretidrsa
+    #   until: secretidrsa is succeeded
+    #   retries: 60
+    #   delay: 10
+    #   failed_when: secretidrsa is failed or secretidrsa.failed
 
     - name: Create SSH config file with StrictHostKeyChecking no
       ansible.builtin.copy:
