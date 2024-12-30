@@ -26,17 +26,17 @@
       delay: 2
       until: cleanvm.resources | length == 0
 
-    - name: Removing the idrsa-exercise9 secret
-      kubernetes.core.k8s:
-        state: absent
-        kind: Secret
-        name: idrsa-exercise9
-        namespace: "namespace-{{ user }}"
-      register: idrsa
-      until: idrsa is succeeded
-      retries: 60
-      delay: 10
-      failed_when: idrsa is failed or idrsa.failed
+    # - name: Removing the idrsa-exercise9 secret
+    #   kubernetes.core.k8s:
+    #     state: absent
+    #     kind: Secret
+    #     name: idrsa-exercise9
+    #     namespace: "namespace-{{ user }}"
+    #   register: idrsa
+    #   until: idrsa is succeeded
+    #   retries: 60
+    #   delay: 10
+    #   failed_when: idrsa is failed or idrsa.failed
 
     - name: Create SSH config file with StrictHostKeyChecking no
       ansible.builtin.copy:
