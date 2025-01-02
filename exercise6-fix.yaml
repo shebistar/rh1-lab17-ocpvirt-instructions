@@ -76,6 +76,7 @@
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise6
       ignore_errors: true
+      no_log: true
       register: testssh
       until:
         - testssh.rc == 0
@@ -138,6 +139,7 @@
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise6
       ignore_errors: true
+      no_log: true
       register: testssh
       until:
         - testssh.rc == 0

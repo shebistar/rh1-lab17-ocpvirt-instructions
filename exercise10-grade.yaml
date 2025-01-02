@@ -10,6 +10,7 @@
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise10-a --command 'ping -c1 192.168.0.11'
       ignore_errors: true
+      no_log: true
       register: testping
       until: testping.rc == 0
       retries: 5
