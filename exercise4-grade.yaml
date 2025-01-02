@@ -29,6 +29,6 @@
       when: sockets_count_valid
 
     - name: Show failure message if condition is false
-      ansible.builtin.debug:
+      ansible.builtin.fail:
         msg: "Ops, something went wrong and you have to fix the exercise!"
       when: not sockets_count_valid

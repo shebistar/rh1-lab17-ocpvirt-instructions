@@ -14,9 +14,17 @@
         namespace: namespace-{{ user }}
       register: exercise9vm
 
-    - name: Print if runStrategy is not set to Manual
-      ansible.builtin.assert:
-        that:
-          -  exercise9vm.resources[0].spec.runStrategy == 'Manual'
-        fail_msg: "The runStrategy is not set correctly. It should be either 'Manual'."
-        success_msg: "The runStrategy is set correctly and now the user can shut down their VM via Operating System!"
+    - name: Check if runStrategy is set to 'Manual'
+      ansible.builtin.set_fact:
+        run_strategy_valid: >-
+          {{ exercise9vm.resources[0].spec.runStrategy == 'Manual' }}
+
+    - name: Show success message if runStrategy is set correctly
+      ansible.builtin.debug:
+        msg: "The runStrategy is set correctly, and now the user can shut down their VM via Operating System!"
+      when: run_strategy_valid
+
+    - name: Show failure message if runStrategy is not set correctly
+      ansible.builtin.debug:
+        msg: "The runStrategy is not set correctly. It should be 'Manual'."
+      when: not run_strategy_valid
