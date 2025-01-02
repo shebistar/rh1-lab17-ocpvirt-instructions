@@ -134,7 +134,7 @@
 
     - name: Wait for exercise3
       ansible.builtin.command:
-        cmd: virtctl ssh -i /home/{{ user }}/.ssh/id_rsa lab-user@exercise3
+        cmd: virtctl ssh lab-user@exercise3
       ignore_errors: true
       no_log: true
       register: testssh
