@@ -131,7 +131,6 @@
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise10-a
       ignore_errors: true
-      no_log: true
       register: testssha
       until: testssha.rc == 0
       retries: 20
@@ -141,7 +140,6 @@
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise10-b
       ignore_errors: true
-      no_log: true
       register: testsshb
       until: testsshb.rc == 0
       retries: 20

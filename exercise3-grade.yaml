@@ -19,7 +19,6 @@
         method: GET
         return_content: true
       register: urlcontent
-      no_log: true
       ignore_errors: true
 
     - name: Check if response contains the expected content

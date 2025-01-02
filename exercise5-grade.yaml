@@ -10,7 +10,6 @@
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise5 --command 'sudo fdisk -l /dev/sda'
       ignore_errors: true
-      no_log: true
       register: testssh
 
     - name: Check if disk is on virtual machine OS

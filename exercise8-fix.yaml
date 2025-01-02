@@ -86,7 +86,6 @@
     - name: Wait the ssh access on exercise8 vm
       ansible.builtin.command:
         cmd: virtctl ssh lab-user@exercise8
-      no_log: true
       register: testssh
       until:
         - testssh.rc == 0
