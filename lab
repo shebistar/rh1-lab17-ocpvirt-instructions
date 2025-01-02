@@ -21,6 +21,10 @@ breaks() {
 }
  
 grade() {
+  if ! oc get virtualmachine -n namespace-$USER --no-headers | grep -q "$1"; then
+    echo "There is no virtual machine for this exercise. Did you run 'lab break $1'?"
+    exit 0
+  fi
 	oc project namespace-${USER} > /dev/null 2>&1;
   ansible-playbook /opt/rh1-lab17-ocpvirt/$1-grade.yaml
 }
