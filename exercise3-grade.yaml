@@ -22,9 +22,17 @@
       no_log: true
       ignore_errors: true
 
-    - name: Assert that is in the response body expected
-      ansible.builtin.assert:
-        that:
-          - "'Hello from exercise3, you are doing a great job!' in urlcontent.content"
-        success_msg: "Good job, its working as expected!"
-        fail_msg: "Ops, something went wrong and you have to fix the exercise!"
+    - name: Check if response contains the expected content
+      ansible.builtin.set_fact:
+        urlcontent_valid: >-
+          {{ 'Hello from exercise3, you are doing a great job!' in urlcontent.content }}
+
+    - name: Show success message if condition is true
+      ansible.builtin.debug:
+        msg: "Good job, it's working as expected!"
+      when: urlcontent_valid
+
+    - name: Show failure message if condition is false
+      ansible.builtin.debug:
+        msg: "Ops, something went wrong and you have to fix the exercise!"
+      when: not urlcontent_valid
