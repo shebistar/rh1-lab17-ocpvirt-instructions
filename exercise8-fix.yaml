@@ -88,6 +88,8 @@
         cmd: virtctl ssh lab-user@exercise8
       no_log: true
       register: testssh
-      until: testssh.rc == 0
+      until:
+        - testssh.rc == 0
+        - "'Permanently added' in testssh.stderr"
       retries: 60
       delay: 10

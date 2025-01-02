@@ -138,6 +138,8 @@
       ignore_errors: true
       no_log: true
       register: testssh
-      until: testssh.rc == 0
+      until:
+        - testssh.rc == 0
+        - "'Permanently added' in testssh.stderr"
       retries: 20
       delay: 5
