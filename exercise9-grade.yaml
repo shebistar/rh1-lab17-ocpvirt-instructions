@@ -25,6 +25,6 @@
       when: run_strategy_valid
 
     - name: Show failure message if runStrategy is not set correctly
-      ansible.builtin.debug:
+      ansible.builtin.fail:
         msg: "The runStrategy is not set correctly. It should be 'Manual'."
       when: not run_strategy_valid
