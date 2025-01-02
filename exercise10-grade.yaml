@@ -8,9 +8,9 @@
   tasks:
     - name: Check if exercise10-b VM is reachable
       ansible.builtin.command:
-        cmd: virtctl ssh lab-user@exercise10-a --command 'ping -c1 192.168.0.11'
+        cmd: virtctl ssh -i /home/{{ user }}/.ssh/id_rsa  lab-user@exercise10-a --command 'ping -c1 192.168.0.11'
       ignore_errors: true
-      no_log: true
+      no_log: false
       register: testping
       until: testping.rc == 0
       retries: 5

@@ -7,7 +7,7 @@
     #   register: oc_whoami_result
     #   changed_when: false
     #   ignore_errors: true
-    #   no_log: true
+    #   no_log: false
 
     # - name: Fail if not connected on cluster
     #   ansible.builtin.fail:

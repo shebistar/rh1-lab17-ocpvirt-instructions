@@ -8,9 +8,9 @@
   tasks:
     - name: Testing the ssh access
       ansible.builtin.command:
-        cmd: virtctl ssh lab-user@exercise8
+        cmd: virtctl ssh -i /home/{{ user }}/.ssh/id_rsa  lab-user@exercise8
       ignore_errors: true
-      no_log: true
+      no_log: false
       register: testssh
       until:
         - testssh.rc == 0

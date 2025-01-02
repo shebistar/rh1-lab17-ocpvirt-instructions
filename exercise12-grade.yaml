@@ -16,9 +16,9 @@
 
     - name: Check if exercise12-b app is reachable
       ansible.builtin.command:
-        cmd: virtctl ssh lab-user@exercise12-a --command 'curl --connect-timeout 2 http://{{ exercise11bip.stdout }}'
+        cmd: virtctl ssh -i /home/{{ user }}/.ssh/id_rsa  lab-user@exercise12-a --command 'curl --connect-timeout 2 http://{{ exercise11bip.stdout }}'
       ignore_errors: true
-      no_log: true
+      no_log: false
       register: testcurl
       until: testcurl.rc == 0
       retries: 5

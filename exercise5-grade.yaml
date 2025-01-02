@@ -8,9 +8,9 @@
   tasks:
     - name: Testing fdisk on exercise5 virtual machine
       ansible.builtin.command:
-        cmd: virtctl ssh lab-user@exercise5 --command 'sudo fdisk -l /dev/sda'
+        cmd: virtctl ssh -i /home/{{ user }}/.ssh/id_rsa  lab-user@exercise5 --command 'sudo fdisk -l /dev/sda'
       ignore_errors: true
-      no_log: true
+      no_log: false
       register: testssh
 
     - name: Check if disk is on virtual machine OS
