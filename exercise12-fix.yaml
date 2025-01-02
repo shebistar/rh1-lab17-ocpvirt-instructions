@@ -153,7 +153,9 @@
       ignore_errors: true
       no_log: true
       register: testssha
-      until: testssha.rc == 0
+      until:
+        - testssha.rc == 0
+        - "'lab-user@vmi' not in testssha.stdout"
       retries: 20
       delay: 5
 
@@ -163,7 +165,9 @@
       ignore_errors: true
       no_log: true
       register: testsshb
-      until: testsshb.rc == 0
+      until:
+        - testsshb.rc == 0
+        - "'lab-user@vmi' not in testsshb.stdout"
       retries: 20
       delay: 5
 
