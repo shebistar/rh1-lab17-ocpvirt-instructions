@@ -21,7 +21,7 @@ breaks() {
 }
  
 grade() {
-  if ! oc get virtualmachine -n namespace-$USER --no-headers | grep -q "$1"; then
+	if ! oc get virtualmachine -n namespace-$USER --no-headers | awk '{print $1}' | grep -wq "$1"; then
     echo "There is no virtual machine for this exercise. Did you run 'lab break $1'?"
     exit 0
   fi
