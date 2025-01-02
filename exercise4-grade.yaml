@@ -18,9 +18,17 @@
       ansible.builtin.set_fact:
         sockets_count: "{{ vm_info.resources[0].spec.template.spec.domain.cpu.sockets | int }}"
 
-    - name: Assert that core_count is 2 in order to a VM get 4 vCPU
-      ansible.builtin.assert:
-        that:
-          - sockets_count == "4"
-        success_msg: "Good job, the development team are happy that you solved the problem!"
-        fail_msg: "Ops, something went wrong and you have to fix the exercise!"
+    - name: Check if sockets_count is equal to 4
+      ansible.builtin.set_fact:
+        sockets_count_valid: >-
+          {{ sockets_count == "4" }}
+
+    - name: Show success message if condition is true
+      ansible.builtin.debug:
+        msg: "Good job, the development team is happy that you solved the problem!"
+      when: sockets_count_valid
+
+    - name: Show failure message if condition is false
+      ansible.builtin.debug:
+        msg: "Ops, something went wrong and you have to fix the exercise!"
+      when: not sockets_count_valid
