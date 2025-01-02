@@ -64,7 +64,7 @@
 
     - name: Wait for exercise11-a
       ansible.builtin.command:
-        cmd: virtctl ssh lab-user@exercise11-a
+        cmd: virtctl ssh -i /home/{{ user }}/.ssh/id_rsa lab-user@exercise11-a
       ignore_errors: true
       no_log: true
       register: testssha
@@ -74,7 +74,7 @@
 
     - name: Wait for exercise11-b
       ansible.builtin.command:
-        cmd: virtctl ssh lab-user@exercise11-b
+        cmd: virtctl ssh -i /home/{{ user }}/.ssh/id_rsa lab-user@exercise11-b
       ignore_errors: true
       no_log: true
       register: testsshb
