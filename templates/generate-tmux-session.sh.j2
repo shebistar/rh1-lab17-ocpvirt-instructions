@@ -29,7 +29,7 @@ for window in $(seq 1 "$total_windows"); do
     if [[ "$user_count" -le "$num_users" ]]; then
       echo "    - shell_command:" >> "$output_file"
       echo "      - sudo su - user$user_count" >> "$output_file"
-      echo "      - oc login --insecure-skip-tls-verify=true -u user$user_count {openshift_api_url} -p XXXX" >> "$output_file"
+      echo "      - oc login --insecure-skip-tls-verify=true -u user$user_count APIURL -p XXXX" >> "$output_file"
       ((user_count++))
     fi
   done
