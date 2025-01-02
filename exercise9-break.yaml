@@ -52,9 +52,7 @@
         cmd: virtctl ssh lab-user@exercise9
       ignore_errors: true
       no_log: true
-      until:
-        - testssh.rc == 0
-        - "'lab-user@vmi' not in testssh.stdout"
+      register: testssh
       until: testssh.rc == 0
       retries: 20
       delay: 5
