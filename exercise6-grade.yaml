@@ -31,6 +31,6 @@
       when: cloudinitdisk_valid
 
     - name: Show failure message if 'readonly' is present
-      ansible.builtin.debug:
+      ansible.builtin.fail:
         msg: "Ops, something went wrong and you have to fix the exercise!"
       when: not cloudinitdisk_valid
