@@ -154,8 +154,8 @@
       no_log: false
       register: testssha
       until: testssha.rc == 0
-      retries: 20
-      delay: 10
+      retries: 10
+      delay: 30
 
     - name: Wait for exercise12-b
       ansible.builtin.command:
@@ -164,8 +164,8 @@
       no_log: false
       register: testsshb
       until: testsshb.rc == 0
-      retries: 20
-      delay: 10
+      retries: 10
+      delay: 30
 
     - name: Fixing exercise part 1
       kubernetes.core.k8s:

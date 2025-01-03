@@ -55,5 +55,5 @@
       register: testssh
       until:
         - testssh.rc == 0
-      retries: 20
-      delay: 10
+      retries: 10
+      delay: 30
