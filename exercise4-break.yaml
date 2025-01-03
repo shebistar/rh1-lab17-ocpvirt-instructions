@@ -50,7 +50,7 @@
       register: testssh
       until:
         - testssh.rc == 0
-      retries: 10
+      retries: 20
       delay: 30
 
     - name: Sleeping for 2 minutes to generate load

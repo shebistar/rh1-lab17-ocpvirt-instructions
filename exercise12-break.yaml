@@ -69,7 +69,7 @@
       no_log: false
       register: testssha
       until: testssha.rc == 0
-      retries: 10
+      retries: 20
       delay: 30
 
     - name: Wait for exercise12-b
@@ -79,7 +79,7 @@
       no_log: false
       register: testsshb
       until: testsshb.rc == 0
-      retries: 10
+      retries: 20
       delay: 30
 
     - name: Breaking exercise part 1
