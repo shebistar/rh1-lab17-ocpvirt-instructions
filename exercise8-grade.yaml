@@ -16,7 +16,7 @@
         - testssh.rc == 0
         - "'Permanently added' in testssh.stderr"
       retries: 5
-      delay: 5
+      delay: 10
 
     - name: Check if vn be accessed over SSH
       ansible.builtin.fail:

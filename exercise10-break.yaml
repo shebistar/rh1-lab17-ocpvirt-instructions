@@ -70,7 +70,7 @@
       register: testssha
       until: testssha.rc == 0
       retries: 20
-      delay: 5
+      delay: 10
 
     - name: Wait for exercise10-b
       ansible.builtin.command:
@@ -80,7 +80,7 @@
       register: testsshb
       until: testsshb.rc == 0
       retries: 20
-      delay: 5
+      delay: 10
 
     # - name: Creating NAD 2
     #   kubernetes.core.k8s:

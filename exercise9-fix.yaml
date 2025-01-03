@@ -88,7 +88,7 @@
         - testssh.rc == 0
         - "'Permanently added' in testssh.stderr"
       retries: 20
-      delay: 5
+      delay: 10
 
     - name: Patch the Virtual Machine exercise9 runStrategy to Manual
       kubernetes.core.k8s:

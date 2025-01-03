@@ -82,5 +82,5 @@
         - testssh.rc == 0
         - "'Permanently added' in testssh.stderr"
       retries: 20
-      delay: 5
+      delay: 10
 

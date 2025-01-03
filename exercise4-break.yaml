@@ -52,7 +52,7 @@
         - testssh.rc == 0
         - "'Permanently added' in testssh.stderr"
       retries: 20
-      delay: 5
+      delay: 10
 
     - name: Sleeping for 2 minutes to generate load
       ansible.builtin.pause:
