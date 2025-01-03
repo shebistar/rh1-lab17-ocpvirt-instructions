@@ -86,7 +86,6 @@
       register: testssh
       until:
         - testssh.rc == 0
-        - "'Permanently added' in testssh.stderr"
       retries: 20
       delay: 10
 
