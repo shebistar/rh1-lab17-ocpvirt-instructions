@@ -18,10 +18,10 @@
       ansible.builtin.set_fact:
         sockets_count: "{{ vm_info.resources[0].spec.template.spec.domain.cpu.sockets | int }}"
 
-    - name: Check if sockets_count is equal to 4
+    - name: Check if sockets_count is different from 2
       ansible.builtin.set_fact:
         sockets_count_valid: >-
-          {{ sockets_count == "4" }}
+          {{ sockets_count != "2" }}
 
     - name: Show success message if condition is true
       ansible.builtin.debug:
