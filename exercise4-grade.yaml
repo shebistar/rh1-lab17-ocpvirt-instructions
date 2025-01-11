@@ -21,7 +21,7 @@
     - name: Check if sockets_count is different from 2
       ansible.builtin.set_fact:
         sockets_count_valid: >-
-          {{ sockets_count != "2" }}
+          {{ sockets_count | int > 2 }}
 
     - name: Show success message if condition is true
       ansible.builtin.debug:
