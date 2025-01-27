@@ -71,11 +71,11 @@
       when:
         - nmstate_cfg | default(false) | bool
 
-    - name: Pause for 60 seconds to wait for pods
-      ansible.builtin.pause:
-        seconds: 60
-      when:
-        - nmstate_cfg | default(false) | bool
+    # - name: Pause for 60 seconds to wait for pods
+    #   ansible.builtin.pause:
+    #     seconds: 60
+    #   when:
+    #     - nmstate_cfg | default(false) | bool
 
     # - name: Wait for all pods to be running on openshift-nmstate
     #   kubernetes.core.k8s_info:
@@ -618,6 +618,16 @@
       ignore_errors: true
       when:
         - nmstate_cfg is not defined
+
+    - name: Wait for the nmstate CRD to be created
+      kubernetes.core.k8s_info:
+        kind: CustomResourceDefinition
+        api_version: apiextensions.k8s.io/v1
+      register: crds
+      retries: 30
+      delay: 10
+      until: "'nmstates.nmstate.io' in crds.resources | map(attribute='metadata.name') | list"
+      ignore_errors: true
 
     - name: Create the nmstate
       kubernetes.core.k8s:
