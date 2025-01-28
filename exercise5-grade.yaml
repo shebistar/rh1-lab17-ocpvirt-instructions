@@ -18,7 +18,7 @@
         msg: "oooo no, disk is not working on exercise5 virtual machine"
       when: testssh.rc != 0
 
-    - name: Check the exercise8 status
+    - name: Check the exercise5 status
       ansible.builtin.debug:
         msg: "oohhh yes, now the user can see the extra disk on virtual machine!"
       when: testssh.rc == 0
