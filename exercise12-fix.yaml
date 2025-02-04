@@ -155,7 +155,7 @@
       register: testssha
       until: testssha.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 
     - name: Wait for exercise12-b
       ansible.builtin.command:
@@ -165,7 +165,7 @@
       register: testsshb
       until: testsshb.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 
     - name: Fixing exercise part 1
       kubernetes.core.k8s:

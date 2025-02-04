@@ -81,5 +81,5 @@
       until:
         - testssh.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 

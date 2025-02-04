@@ -51,7 +51,7 @@
       until:
         - testssh.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 
     - name: Sleeping for 2 minutes to generate load
       ansible.builtin.pause:

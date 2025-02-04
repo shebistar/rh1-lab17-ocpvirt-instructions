@@ -81,7 +81,7 @@
       until:
         - testssh.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 
 
     - name: Set VM to stopped state
@@ -143,5 +143,5 @@
       until:
         - testssh.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 

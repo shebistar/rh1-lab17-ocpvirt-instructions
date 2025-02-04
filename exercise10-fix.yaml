@@ -135,7 +135,7 @@
       register: testssha
       until: testssha.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 
     - name: Wait for exercise10-b
       ansible.builtin.command:
@@ -145,5 +145,5 @@
       register: testsshb
       until: testsshb.rc == 0
       retries: 20
-      delay: 30
+      delay: 10
 
