@@ -672,3 +672,18 @@
       when:
         - nmstate_cfg is not defined
       ignore_errors: true
+
+    - name: Change memoryOvercommitPercentage to 200 on kubevirt-hyperconverged
+      kubernetes.core.k8s:
+        state: patched
+        kind: HyperConverged
+        api_version: hco.kubevirt.io/v1beta1
+        name: kubevirt-hyperconverged
+        namespace: openshift-cnv
+        merge_type:
+          - merge
+        definition:
+          spec:
+            higherWorkloadDensity:
+              memoryOvercommitPercentage: 200
+      ignore_errors: true
