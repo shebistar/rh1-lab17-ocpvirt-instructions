@@ -586,38 +586,38 @@
       when:
         - nmstate_cfg is not defined
  
-    - name: Wait for ip_forward to be 0 on OCP nodes
-      ansible.builtin.command:
-        cmd: >
-          oc debug node/{{ item }} -- chroot /host bash -c "cat /proc/sys/net/ipv4/ip_forward"
-      register: ipforward
-      until: ipforward.stdout == "0"
-      retries: 60
-      delay: 10
-      with_items: "{{ node_names }}"
-      ignore_errors: true
-      when:
-        - nmstate_cfg is not defined
-
-    - name: Change ip_forward to be 1 on OCP nodes
-      ansible.builtin.command:
-        cmd: >
-          oc debug node/{{ item }} -- chroot /host bash -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
-      register: changeipforward
-      with_items: "{{ node_names }}"
-      ignore_errors: true
-      when:
-        - nmstate_cfg is not defined
-
-    - name: Execute sysctl -p on OCP nodes
-      ansible.builtin.command:
-        cmd: >
-          oc debug node/{{ item }} -- chroot /host bash -c "sudo sysctl -p"
-      register: sysctlp
-      with_items: "{{ node_names }}"
-      ignore_errors: true
-      when:
-        - nmstate_cfg is not defined
+#    - name: Wait for ip_forward to be 0 on OCP nodes
+#      ansible.builtin.command:
+#        cmd: >
+#          oc debug node/{{ item }} -- chroot /host bash -c "cat /proc/sys/net/ipv4/ip_forward"
+#      register: ipforward
+#      until: ipforward.stdout == "0"
+#      retries: 60
+#      delay: 10
+#      with_items: "{{ node_names }}"
+#      ignore_errors: true
+#      when:
+#        - nmstate_cfg is not defined
+#
+#    - name: Change ip_forward to be 1 on OCP nodes
+#      ansible.builtin.command:
+#        cmd: >
+#          oc debug node/{{ item }} -- chroot /host bash -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
+#      register: changeipforward
+#      with_items: "{{ node_names }}"
+#      ignore_errors: true
+#      when:
+#        - nmstate_cfg is not defined
+#
+#    - name: Execute sysctl -p on OCP nodes
+#      ansible.builtin.command:
+#        cmd: >
+#          oc debug node/{{ item }} -- chroot /host bash -c "sudo sysctl -p"
+#      register: sysctlp
+#      with_items: "{{ node_names }}"
+#      ignore_errors: true
+#      when:
+#        - nmstate_cfg is not defined
 
     - name: Wait for the nmstate CRD to be created
       kubernetes.core.k8s_info:
