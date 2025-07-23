@@ -375,10 +375,10 @@
       with_sequence: start=1 end={{ num_users }}
       ignore_errors: true
 
-    - name: Ensure community.crypto is installed
-      ansible.builtin.command:
-        cmd: ansible-galaxy collection install community.crypto
-      register: install_result
+    - name: Ensure community.crypto v2.26.2 is installed
+  ansible.builtin.command:
+    cmd: ansible-galaxy collection install community.crypto:2.2.6.2
+  register: install_result
 
     - name: Ensure .ssh directory exists on users dir
       ansible.builtin.file:
