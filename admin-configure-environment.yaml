@@ -2,23 +2,6 @@
   hosts: localhost
 
   tasks:
-    # - name: Check if admin is authenticated with OpenShift 4
-    #   ansible.builtin.command: oc whoami
-    #   register: oc_whoami_result
-    #   changed_when: false
-    #   ignore_errors: true
-    #   no_log: false
-
-    # - name: Fail if not connected on cluster
-    #   ansible.builtin.fail:
-    #     msg: "You are not logged into the cluster. Please use 'oc login' and re-run this playbook"
-    #   when: oc_whoami_result.rc != 0
-
-    # - name: Fail if not logged in as admin
-    #   ansible.builtin.fail:
-    #     msg: "You are logged in but you are not 'admin' user. Please log in with user 'admin'"
-    #   when: oc_whoami_result.stdout != "admin" or oc_whoami_result.stdout != "system:admin"
-
     - name: Ensure openshift-nmstate exists
       kubernetes.core.k8s:
         state: present
@@ -71,24 +54,6 @@
       when:
         - nmstate_cfg | default(false) | bool
 
-    # - name: Pause for 60 seconds to wait for pods
-    #   ansible.builtin.pause:
-    #     seconds: 60
-    #   when:
-    #     - nmstate_cfg | default(false) | bool
-
-    # - name: Wait for all pods to be running on openshift-nmstate
-    #   kubernetes.core.k8s_info:
-    #     api_version: v1
-    #     kind: Pod
-    #     namespace: "openshift-nmstate"
-    #   register: pod_list
-    #   until: pod_list.resources | selectattr('status.phase', 'eq', 'Running') | list | length == pod_list.resources | length
-    #   retries: 60
-    #   delay: 10
-    #   when:
-    #     - nmstate_cfg | default(false) | bool
-
     - name: Ensure users namespace exists
       kubernetes.core.k8s:
         state: present
@@ -108,9 +73,6 @@
       kubernetes.core.k8s:
         state: present
         namespace: "namespace-user{{ item }}"
-        kind: RoleBinding
-        api_version: rbac.authorization.k8s.io/v1
-        name: user-cluster-admin-binding
         definition:
           kind: RoleBinding
           apiVersion: rbac.authorization.k8s.io/v1
@@ -147,7 +109,7 @@
         kind: Namespace
         name: "{{ item }}"
         merge_type: merge
-        resource_definition:
+        definition:
           metadata:
             annotations:
               scheduler.alpha.kubernetes.io/defaultTolerations: '[{"operator": "Exists"}]'
@@ -168,14 +130,14 @@
         name: kubevirt-hyperconverged
         merge_type: merge
         namespace: openshift-cnv
-        resource_definition:
+        definition:
           spec:
             infra:
               nodePlacement:
                 nodeSelector:
                   node-role.kubernetes.io/infra: ""
-              tolerations:
-                - operator: Exists
+                tolerations:
+                  - operator: Exists
       register: cnvinfra
       until: cnvinfra is succeeded
       retries: 60
@@ -188,7 +150,7 @@
         name: rook-ceph-operator-config
         merge_type: merge
         namespace: openshift-storage
-        resource_definition:
+        definition:
           data:
             CSI_PLUGIN_TOLERATIONS: |
               - operator: Exists
@@ -233,12 +195,12 @@
     - name: Getting only worker nodes
       ansible.builtin.set_fact:
         nodes_list: "{{ allnodes.resources | selectattr('metadata.labels', 'defined') | \
-                     selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/worker') | map(attribute='metadata.name') | list }}"
+                        selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/worker') | map(attribute='metadata.name') | list }}"
 
     - name: Getting only control-planes
       ansible.builtin.set_fact:
         controlplane_nodes_list: "{{ allnodes.resources | selectattr('metadata.labels', 'defined') | \
-                     selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/control-plane') | map(attribute='metadata.name') | list }}"
+                                    selectattr('metadata.labels', 'search', 'node-role.kubernetes.io/control-plane') | map(attribute='metadata.name') | list }}"
 
     - name: Add label node-role.kubernetes.io/infra to all master nodes
       kubernetes.core.k8s:
@@ -336,7 +298,7 @@
 
     - name: Create the ClusterRole to user metrics
       kubernetes.core.k8s:
-        kind: ClusterRole
+        kind: ClusterRoleBinding
         namespace: 'namespace-user{{ item | int }}'
         definition:
           apiVersion: rbac.authorization.k8s.io/v1
@@ -376,9 +338,9 @@
       ignore_errors: true
 
     - name: Ensure community.crypto v2.26.2 is installed
-  ansible.builtin.command:
-    cmd: ansible-galaxy collection install community.crypto:2.26.2
-  register: install_result
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install community.crypto:2.26.2
+      register: install_result
 
     - name: Ensure .ssh directory exists on users dir
       ansible.builtin.file:
@@ -406,74 +368,6 @@
       become: true
       become_method: ansible.builtin.sudo
       ignore_errors: true
-
-    # - name: Remove argocd CRD on openshift-gitops
-    #   kubernetes.core.k8s:
-    #     kind: ArgoCD
-    #     api_version: argoproj.io/v1alpha1
-    #     namespace: openshift-gitops
-    #     name: openshift-gitops
-    #     state: absent
-    #   register: removeargo
-
-    # - name: Get all applications on openshift-gitops
-    #   kubernetes.core.k8s_info:
-    #     kind: Application
-    #     api_version: argoproj.io/v1alpha1
-    #     namespace: openshift-gitops
-    #   register: application_crds
-
-    # - name: Remove applications
-    #   kubernetes.core.k8s:
-    #     kind: Application
-    #     api_version: argoproj.io/v1alpha1
-    #     namespace: openshift-gitops
-    #     name: "{{ item.metadata.name }}"
-    #     state: absent
-    #   loop: "{{ application_crds.resources }}"
-
-    # - name: Remove finalizer of the applications
-    #   kubernetes.core.k8s:
-    #     kind: Application
-    #     api_version: argoproj.io/v1alpha1
-    #     namespace: openshift-gitops
-    #     definition:
-    #       metadata:
-    #         name: "{{ item.metadata.name }}"
-    #         finalizers: "{{ item.metadata.finalizers | difference(['resources-finalizer.argocd.argoproj.io']) }}"
-    #   loop: "{{ application_crds.resources }}"
-    #   when: "'resources-finalizer.argocd.argoproj.io' in item.metadata.finalizers"
-
-    # - name: Removing OADP projects
-    #   kubernetes.core.k8s:
-    #     state: absent
-    #     definition:
-    #       apiVersion: v1
-    #       kind: Namespace
-    #       metadata:
-    #         name: "oadp-user{{ item }}"
-    #   register: removeoadp
-    #   until: removeoadp is succeeded
-    #   retries: 60
-    #   delay: 10
-    #   failed_when: removeoadp is failed or removeoadp.failed
-    #   with_sequence: start=1 end={{ num_users }}
-
-    # - name: Remove Subscription OpenShift GitOps
-    #   kubernetes.core.k8s:
-    #     api_version: operators.coreos.com/v1alpha1
-    #     namespace: openshift-operators
-    #     kind: Subscription
-    #     name: openshift-gitops-operator
-    #     state: absent
-
-    # - name: Remove ClusterServiceVersion OpenShift GitOps
-    #   kubernetes.core.k8s:
-    #     api_version: operators.coreos.com/v1alpha1
-    #     namespace: openshift-operators
-    #     kind: clusterserviceversion
-    #     name: openshift-gitops-operator.v1.13.3
-    #     state: absent
 
     - name: New /usr/loca/bin/test-lab-performance.sh file
       ansible.builtin.template:
@@ -506,25 +400,25 @@
 
     - name: Configuring clusterrole for ex10
       kubernetes.core.k8s:
-       kind: rbac.authorization.k8s.io/v1
-       definition:
-         apiVersion: rbac.authorization.k8s.io/v1
-         kind: ClusterRole
-         metadata:
-           name: network-access
-         rules:
-           - apiGroups:
-               - operator.openshift.io
-             resources:
-               - networks
-             verbs:
-               - get
-               - list
-               - watch
+        state: present
+        definition:
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRole
+          metadata:
+            name: network-access
+          rules:
+            - apiGroups:
+                - operator.openshift.io
+              resources:
+                - networks
+              verbs:
+                - get
+                - list
+                - watch
 
     - name: Configuring clusterrole for ex10 part 2
       kubernetes.core.k8s:
-        kind: rbac.authorization.k8s.io/v1
+        state: present
         definition:
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRole
@@ -537,7 +431,7 @@
 
     - name: Configuring clusterrolebinding for ex10 on users
       kubernetes.core.k8s:
-        kind: rbac.authorization.k8s.io/v1
+        state: present
         definition:
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
@@ -555,7 +449,7 @@
 
     - name: Configuring clusterrolebinding for ex10 on users part 2
       kubernetes.core.k8s:
-        kind: rbac.authorization.k8s.io/v1
+        state: present
         definition:
           apiVersion: rbac.authorization.k8s.io/v1
           kind: ClusterRoleBinding
@@ -585,39 +479,6 @@
       ignore_errors: true
       when:
         - nmstate_cfg is not defined
- 
-#    - name: Wait for ip_forward to be 0 on OCP nodes
-#      ansible.builtin.command:
-#        cmd: >
-#          oc debug node/{{ item }} -- chroot /host bash -c "cat /proc/sys/net/ipv4/ip_forward"
-#      register: ipforward
-#      until: ipforward.stdout == "0"
-#      retries: 60
-#      delay: 10
-#      with_items: "{{ node_names }}"
-#      ignore_errors: true
-#      when:
-#        - nmstate_cfg is not defined
-#
-#    - name: Change ip_forward to be 1 on OCP nodes
-#      ansible.builtin.command:
-#        cmd: >
-#          oc debug node/{{ item }} -- chroot /host bash -c "echo 1 > /proc/sys/net/ipv4/ip_forward"
-#      register: changeipforward
-#      with_items: "{{ node_names }}"
-#      ignore_errors: true
-#      when:
-#        - nmstate_cfg is not defined
-#
-#    - name: Execute sysctl -p on OCP nodes
-#      ansible.builtin.command:
-#        cmd: >
-#          oc debug node/{{ item }} -- chroot /host bash -c "sudo sysctl -p"
-#      register: sysctlp
-#      with_items: "{{ node_names }}"
-#      ignore_errors: true
-#      when:
-#        - nmstate_cfg is not defined
 
     - name: Wait for the nmstate CRD to be created
       kubernetes.core.k8s_info:
@@ -680,8 +541,6 @@
         api_version: hco.kubevirt.io/v1beta1
         name: kubevirt-hyperconverged
         namespace: openshift-cnv
-        merge_type:
-          - merge
         definition:
           spec:
             higherWorkloadDensity:
