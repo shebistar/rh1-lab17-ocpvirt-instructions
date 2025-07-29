@@ -2,6 +2,14 @@
   hosts: localhost
 
   tasks:
+
+    - name: Ensure required Ansible collections are installed
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install kubernetes.core community.libvirt community.general ansible.posix community.crypto
+      register: collections_install
+      changed_when: "'was installed successfully' in collections_install.stdout"
+      ignore_errors: true
+
     - name: Ensure openshift-nmstate exists
       kubernetes.core.k8s:
         state: present
@@ -53,7 +61,7 @@
             sourceNamespace: openshift-marketplace
       when:
         - nmstate_cfg | default(false) | bool
-
+      
     - name: Ensure users namespace exists
       kubernetes.core.k8s:
         state: present
