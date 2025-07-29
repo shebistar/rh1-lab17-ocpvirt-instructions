@@ -2,13 +2,20 @@
   hosts: localhost
 
   tasks:
-    - name: Install Python requirements from all requirements.yaml files
+    - name: Ensure kubernetes Python package is installed
+      ansible.builtin.pip:
+        name: kubernetes
+        executable: pip3
+      become: true
+      ignore_errors: true
+
+    - name: Install all Ansible Galaxy collections from requirements.yml files
       ansible.builtin.shell:
         cmd: |
-          for req in $(find {{ playbook_dir | default('.') }} -name requirements.yaml); do
-            pip3 install -r "$req" || true
+          for req in $(find {{ playbook_dir | default('.') }} -name requirements.yml); do
+            ansible-galaxy collection install -r "$req" || true
           done
-      register: requirements_install
+      register: galaxy_requirements_install
       changed_when: false
       ignore_errors: true
 
