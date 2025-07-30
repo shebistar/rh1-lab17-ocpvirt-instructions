@@ -4,6 +4,7 @@
 
   vars:
     user: "{{ lookup('env', 'USER') }}"
+    ansible_python_interpreter: /usr/bin/python3.9
 
   tasks:
     - name: Get the exercise6 VM details from OpenShift Virtualization
@@ -16,9 +17,7 @@
 
     - name: Get the cloudinitdisk details
       ansible.builtin.set_fact:
-        cloudinitdisk: " {{
-          vm_info.resources[0].spec.template.spec.domain.devices.disks[1]
-        }}"
+        cloudinitdisk: "{{ vm_info.resources[0].spec.template.spec.domain.devices.disks[1] }}"
 
     - name: Check if cloudinitdisk has no 'readonly' attribute
       ansible.builtin.set_fact:

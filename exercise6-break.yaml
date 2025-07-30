@@ -6,6 +6,7 @@
     user: "{{ lookup('env', 'USER') }}"
     vm_name: "exercise6"
     namespace: "namespace-{{ user }}"
+    ansible_python_interpreter: /usr/bin/python3.9
 
   tasks:
     - name: Create SSH config file with StrictHostKeyChecking no

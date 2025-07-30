@@ -5,6 +5,7 @@
 
   vars:
     user: "{{ lookup('env', 'USER') }}"
+    ansible_python_interpreter: /usr/bin/python3.9
 
   tasks:
     - name: Creating the exercise7 virtual machine

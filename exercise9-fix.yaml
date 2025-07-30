@@ -4,6 +4,7 @@
 
   vars:
     user: "{{ lookup('env', 'USER') }}"
+    ansible_python_interpreter: /usr/bin/python3.9
 
   tasks:
     - name: Clean the exercise9 vm
