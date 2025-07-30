@@ -235,6 +235,7 @@
     - name: Clone tmux repo to lab-user
       ansible.builtin.git:
         repo: https://github.com/lgchiaretto/tmux.git
+        branch: rh1
         dest: /home/lab-user/tmux
       ignore_errors: true
 
