@@ -532,9 +532,9 @@
           provisioner: openshift-storage.rbd.csi.ceph.com
           reclaimPolicy: Delete
           volumeBindingMode: WaitForFirstConsumer
-      when:
-        - nmstate_cfg is not defined
       ignore_errors: true
+#      when:
+#        - nmstate_cfg is not defined
 
     - name: Change memoryOvercommitPercentage to 200 on kubevirt-hyperconverged
       kubernetes.core.k8s:
