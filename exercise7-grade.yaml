@@ -10,7 +10,7 @@
     - name: Get the VirtualMachineSnapshot
       kubernetes.core.k8s_info:
         kind: VirtualMachineSnapshot
-        api_version: snapshot.kubevirt.io/v1alpha1
+        api_version: snapshot.kubevirt.io/v1beta1
         namespace: 'namespace-{{ user }}'
       register: vm_restore_info
 
