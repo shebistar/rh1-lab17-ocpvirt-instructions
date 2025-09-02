@@ -128,7 +128,7 @@
         state: present
         definition:
           spec:
-            running: true
+            runStrategy: Always
       register: startvm
       until: startvm is succeeded
       retries: 60
