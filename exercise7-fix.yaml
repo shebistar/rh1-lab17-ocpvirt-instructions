@@ -96,7 +96,7 @@
         state: present
         definition:
           spec:
-            running: false
+            runStrategy: Halted
       register: stopvm
       until: stopvm is succeeded
       retries: 60
