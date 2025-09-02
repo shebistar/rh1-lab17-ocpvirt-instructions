@@ -59,7 +59,7 @@
         kind: VirtualMachineSnapshot
         namespace: 'namespace-{{ user }}'
         definition:
-          apiVersion: snapshot.kubevirt.io/v1alpha1
+          apiVersion: snapshot.kubevirt.io/v1beta1
           kind: VirtualMachineSnapshot
           metadata:
             name: exercise7-snapshot
@@ -118,7 +118,7 @@
         kind: VirtualMachineSnapshot
         namespace: 'namespace-{{ user }}'
         definition:
-          apiVersion: snapshot.kubevirt.io/v1alpha1
+          apiVersion: snapshot.kubevirt.io/v1beta1
           kind: VirtualMachineSnapshot
           metadata:
             name: restore-exercise7-snapshot
